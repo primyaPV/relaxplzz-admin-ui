@@ -1,0 +1,127 @@
+.link-page {
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+    margin-left: 289px;
+}
+
+.link-header {
+    background-color: #ddd;
+    color: #333;
+    padding: 20px 40px;
+    margin-bottom: 20px;
+    font-size: 15px;
+    font-weight: 450;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 20px;
+}
+
+.link-header h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.link-table-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.link-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.link-table th,
+.link-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 15px;
+}
+
+.link-table th {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.link-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.create-link-button {
+    font-size: 24px;
+    background-color: #606260;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-link-button:hover {
+    background-color: #2f322f;
+}
+
+.create-link-button:focus {
+    outline: none;
+}
+
+.edit-button,
+.delete-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.edit-button i,
+.delete-button i {
+    font-size: 18px;
+}
+
+.edit-button {
+    color: rgb(118, 115, 115);
+}
+
+.delete-button {
+    color: rgb(118, 115, 115);
+}
+
+.edit-button:hover,
+.delete-button:hover {
+    color: rgb(52, 50, 50);
+}
+
+.close-modal-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+.close-modal-button:hover {
+    color: #d9534f;
+}
+
+.modal-content {
+    position: relative;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 100%;
+}

@@ -1,0 +1,203 @@
+.address-page {
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+    margin-left: 289px;
+}
+
+.address-header {
+    background-color: #ddd;
+    color: #333;
+    padding: 20px 40px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 500;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 20px;
+}
+
+.address-header h1 {
+    margin: 0;
+    /* Remove any unnecessary margins from the header */
+    font-size: 22px;
+    color: #333;
+}
+
+.address-table-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.address-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.address-table th,
+.address-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.address-table th {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.address-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.create-address-button {
+    font-size: 24px;
+    /* Size the plus icon */
+    background-color: #606260;
+    /* Green background */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    /* Round button */
+    width: 36px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-address-button:hover {
+    background-color: #2f322f;
+    /* Slightly darker green on hover */
+}
+
+.create-address-button:focus {
+    outline: none;
+    /* Remove focus outline */
+}
+
+
+/* Style for the table actions buttons */
+
+.edit-button,
+.delete-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.edit-button i,
+.delete-button i {
+    font-size: 18px;
+}
+
+.edit-button {
+    color: rgb(118, 115, 115);
+}
+
+.delete-button {
+    color: rgb(118, 115, 115);
+}
+
+.edit-button:hover {
+    color: rgb(52, 50, 50);
+    ;
+}
+
+.delete-button:hover {
+    color: rgb(52, 50, 50);
+}
+
+
+/* Modal close button positioned inside the modal content, top-right corner */
+
+.close-modal-button {
+    position: absolute;
+    top: 10px;
+    /* 10px from the top */
+    right: 10px;
+    /* 10px from the right */
+    background: none;
+    border: none;
+    font-size: 24px;
+    /* Adjust size for the cross icon */
+    cursor: pointer;
+    color: #333;
+    /* Default color for the icon */
+}
+
+.close-modal-button:hover {
+    color: #d9534f;
+    /* Change to red when hovered */
+}
+
+
+/* Modal content */
+
+.modal-content1 {
+    position: relative;
+    /* Make sure the close button is positioned relative to this */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    max-width: 100%;
+}
+
+.confirm-modal {
+    text-align: center;
+}
+
+.confirm-modal h3 {
+    margin-bottom: 20px;
+}
+
+.delete-confirm {
+    background-color: #dc3545;
+    color: #fff;
+    margin-right: 10px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+}
+
+.cancel-button {
+    background-color: #6c757d;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+}
+
+.add-phone-button {
+    margin-top: 10px;
+    padding: 6px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.add-phone-button i {
+    margin-right: 4px;
+}
+
+.add-phone-button:hover {
+    background-color: #388e3c;
+}
+
+.phone-input {
+    display: block;
+    margin-bottom: 8px;
+    padding: 8px;
+    width: 100%;
+}

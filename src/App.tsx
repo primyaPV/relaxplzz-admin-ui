@@ -1,26 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import Menu from './components/Menu';
+import Address from './components/credentials/Address';
+import Banners from './components/Banners';
+import MidBanners from './components/MidBanners';
+import ImageVideoManagement from './components/gallery/ImageVideo';
+import LinkPage from './components/credentials/Link'; 
+import EnquiryList from './components/enquiry/EnquiryList';
 
-function App() {
+
+const App: React.FC = () => {
+  const [activePage, setActivePage] = useState<string>(''); 
+
+  const handleMenuClick = (page: string) => {
+    setActivePage(page);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <Menu onMenuClick={handleMenuClick} />
+
+      {activePage === 'address' && <Address />}
+      {activePage === 'banners' && <Banners />}
+      {activePage === 'midbanners' && <MidBanners />}
+      {activePage === 'imagevideo' && <ImageVideoManagement />}
+      {activePage === 'link' && <LinkPage />} 
+      {activePage === 'enquirylist' && <EnquiryList />} 
     </div>
   );
-}
+};
 
 export default App;

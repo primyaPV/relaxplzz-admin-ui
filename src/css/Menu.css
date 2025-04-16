@@ -1,0 +1,167 @@
+.menu {
+    width: 250px;
+    height: 100vh;
+    background-color: rgb(189, 185, 185);
+    padding: 20px;
+    font-family: 'Poppins', sans-serif;
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo-image {
+    width: 150px;
+    height: auto;
+    filter: grayscale(100%) brightness(0);
+}
+
+.menu ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.menu-item {
+    margin-bottom: 15px;
+    padding-left: 0;
+}
+
+.toggle {
+    display: none;
+}
+
+
+/* Style for the main menu item */
+
+.menu-item label {
+    font-size: 16px;
+    /* Smaller font size */
+    font-weight: 500;
+    /* Slightly lighter than before */
+    color: #333;
+    padding: 8px 0;
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    /* Remove any underline */
+    padding-left: 50px;
+    /* align-items: left; */
+    /* Space for icon */
+    text-align: left;
+    position: relative;
+    transition: color 0.3s, transform 0.3s ease;
+}
+
+.menu-item label i {
+    position: absolute;
+    left: 5px;
+    font-size: 18px;
+    color: #333;
+}
+
+.menu-item label:hover {
+    color: #007bff;
+    transform: translateX(5px);
+}
+
+.submenu {
+    display: none;
+    padding-left: 20px;
+}
+
+.toggle:checked+label+.submenu {
+    display: block;
+}
+
+.submenu li {
+    font-size: 14px;
+    color: #323131;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: left;
+    padding-left: 50px;
+}
+
+.submenu li:hover {
+    color: #007bff;
+    background-color: #f4f4f4;
+    padding-left: 15px;
+    padding-right: 65px;
+    transition: width 0.3s ease;
+    display: inline-block;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 5px;
+    width: 450px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-actions button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-actions button:hover {
+    background-color: #0056b3;
+}
+
+button[type="button"] {
+    background-color: #ccc;
+}
+
+button[type="button"]:hover {
+    background-color: #888;
+}
