@@ -129,9 +129,6 @@
     z-index: 999;
 }
 
-
-/* Modal box */
-
 .modal-content {
     position: relative;
     background-color: #fff;
@@ -143,9 +140,6 @@
     font-family: 'Poppins', sans-serif;
 }
 
-
-/* Modal header */
-
 .modal-content h2 {
     margin-bottom: 20px;
     font-size: 24px;
@@ -153,9 +147,6 @@
     text-align: center;
     color: #333;
 }
-
-
-/* Form group styles */
 
 .form-group {
     margin-bottom: 15px;
@@ -177,9 +168,6 @@
     font-family: 'Poppins', sans-serif;
     font-size: 14px;
 }
-
-
-/* Action buttons */
 
 .form-actions {
     display: flex;
@@ -209,4 +197,62 @@
     margin: auto;
     border-radius: 8px;
     text-align: center;
+}
+
+.search-bar-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-bar-wrapper {
+    position: relative;
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 38px;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    width: 250px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    overflow: hidden;
+}
+
+.search-dropdown-option {
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-dropdown-option:hover {
+    background-color: #f0f0f0;
+}
+
+.enquiry-search-input {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 250px;
+    transition: border-color 0.3s;
+}
+
+.enquiry-search-input:focus {
+    border-color: #606260;
+    outline: none;
+}
+
+.date-range-fields {
+    display: flex;
+    gap: 8px;
+}
+
+.date-range-fields input {
+    width: 130px;
 }

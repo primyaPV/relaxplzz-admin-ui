@@ -92,8 +92,8 @@
 
 .submenu li:hover {
     color: #007bff;
-    background-color: #f4f4f4;
-    padding-left: 15px;
+    padding-left: 30px;
+    font-size: 14px;
     padding-right: 65px;
     transition: width 0.3s ease;
     display: inline-block;

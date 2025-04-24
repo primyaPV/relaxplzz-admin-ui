@@ -62,6 +62,16 @@ const Menu: React.FC<MenuProps> = ({ onMenuClick }) => {
             <li onClick={() => onMenuClick('enquirylist')}>• Enquiry List</li>
           </ul>
         </li>
+        <li className="menu-item">
+          <input type="checkbox" id="blog" className="toggle" />
+          <label htmlFor="blog">
+            <i className="fas fa-blog"></i> Blog Management
+          </label>
+          <ul className="submenu">
+            <li onClick={() => onMenuClick('blog')}>• Blog</li>
+          </ul>
+        </li>
+        
       </ul>
     </div>
   );
