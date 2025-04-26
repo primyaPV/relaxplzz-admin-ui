@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../css/blog/CreateEditBlog.css';
-import CKEditorWrapper from './CKEditorWrapper'; // Import Quill styles
+import CKEditorWrapper from './CKEditorWrapper';
+import { FaImage, FaLink, FaFileAlt } from 'react-icons/fa';
 
 export interface BlogPost {
   id: number;
@@ -30,10 +31,21 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     status: 'active',
   });
 
+  const [imageFields, setImageFields] = useState<string[]>(['']); // Start with one image field
+  const [contentEditors, setContentEditors] = useState<string[]>(['']); // Start with one content editor
+  const [linkFields, setLinkFields] = useState<string[]>([]); // Start with no link fields
+  const [fieldOrder, setFieldOrder] = useState<string[]>(['image', 'content']); // Start with image and content fields already
+
   useEffect(() => {
     if (initialData) {
-      const { id, ...rest } = initialData;
-      setFormData(rest);
+      const { id, images, links, ...rest } = initialData;
+      setFormData({
+        ...rest,
+        images: images || [],
+        links: links || [],
+      });
+      setImageFields(images || []);
+      setLinkFields(links || []);
     }
   }, [initialData]);
 
@@ -41,16 +53,39 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     setFormData({ ...formData, [field]: value });
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     if (e.target.files && e.target.files[0]) {
       const imageUrl = URL.createObjectURL(e.target.files[0]);
-      setFormData({ ...formData, images: [imageUrl] });
+      const updatedImages = [...imageFields];
+      updatedImages[index] = imageUrl;
+      setImageFields(updatedImages);
     }
+  };
+
+  const handleAddImageField = () => {
+    setImageFields([...imageFields, '']); // Add a new empty image field
+    setFieldOrder([...fieldOrder, 'image']); // Track that "image" field was added
+  };
+
+  const handleAddContentEditor = () => {
+    setContentEditors([...contentEditors, '']); // Add a new content editor
+    setFieldOrder([...fieldOrder, 'content']); // Track that "content" field was added
+  };
+
+  const handleAddLinkField = () => {
+    setLinkFields([...linkFields, '']); // Add a new link input field
+    setFieldOrder([...fieldOrder, 'link']); // Track that "link" field was added
+  };
+
+  const handleLinkChange = (value: string, index: number) => {
+    const updatedLinks = [...linkFields];
+    updatedLinks[index] = value;
+    setLinkFields(updatedLinks);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({ ...formData, images: imageFields, links: linkFields });
   };
 
   const handleReset = () => {
@@ -63,6 +98,10 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
       content: '',
       status: 'active',
     });
+    setImageFields(['']); // Reset to have at least one image field
+    setContentEditors(['']); // Reset content editors
+    setLinkFields([]); // Reset link fields (no link input fields initially)
+    setFieldOrder(['image', 'content']); // Reset order to show image and content initially
   };
 
   return (
@@ -70,6 +109,18 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
       <header className="create-blog-header">
         <h1>{initialData ? 'Edit Blog Post' : 'Create Blog Post'}</h1>
         <button className="back-button" onClick={onClose}>← Back</button>
+
+        <div className="blog-header-actions">
+          <button className="icon-button" title="Add Image" onClick={handleAddImageField}>
+            <FaImage />
+          </button>
+          <button className="icon-button" title="Add Content" onClick={handleAddContentEditor}>
+            <FaFileAlt />
+          </button>
+          <button className="icon-button" title="Add Link" onClick={handleAddLinkField}>
+            <FaLink />
+          </button>
+        </div>
       </header>
 
       <form className="blog-form" onSubmit={handleSubmit}>
@@ -89,24 +140,63 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           required
         />
 
-        <label>Upload Image</label>
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-        {formData.images.length > 0 && (
-          <img
-            src={formData.images[0]}
-            alt="Preview"
-            width="200"
-            style={{ marginTop: '10px', borderRadius: '6px' }}
-          />
-        )}
+        {/* Render fields based on the order in fieldOrder */}
+        {fieldOrder.map((field, index) => {
+          if (field === 'content') {
+            return (
+              <div key={index}>
+                <label>Content {index + 1}</label>
+                <CKEditorWrapper
+                  value={contentEditors[index]}
+                  onChange={(value) => {
+                    const updatedContentEditors = [...contentEditors];
+                    updatedContentEditors[index] = value;
+                    setContentEditors(updatedContentEditors);
+                  }}
+                  className="custom-ckeditor"
+                />
+              </div>
+            );
+          }
 
+          if (field === 'link') {
+            return (
+              <div key={index}>
+                <label>Link {index + 1}</label>
+                <input
+                  type="url"
+                  value={linkFields[index]}
+                  onChange={(e) => handleLinkChange(e.target.value, index)} // Handle link input change
+                  placeholder="Enter link"
+                  required
+                />
+              </div>
+            );
+          }
 
-<label>Content</label>
-<CKEditorWrapper
-  value={formData.content}
-  onChange={(value) => handleChange('content', value)}
-  className="custom-ckeditor"
-/>
+          if (field === 'image') {
+            return (
+              <div key={index}>
+                <label>Upload Image {index + 1}</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, index)} // Handling image upload
+                />
+                {imageFields[index] && (
+                  <img
+                    src={imageFields[index]}
+                    alt={`Preview ${index + 1}`}
+                    width="200"
+                    style={{ marginTop: '10px', borderRadius: '6px' }}
+                  />
+                )}
+              </div>
+            );
+          }
+
+          return null;
+        })}
 
         <div className="form-actions">
           <button type="submit">Preview & Publish</button>

@@ -47,7 +47,7 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ value, onChange, clas
         editorInstanceRef.current = null;
       }
     };
-  }, [value]);
+  }, []);
 
   return <div ref={editorContainerRef} className={className} />;
 };

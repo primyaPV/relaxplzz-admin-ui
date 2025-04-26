@@ -37,27 +37,63 @@ body {
 }
 
 .back-button {
-    font-size: 14px;
-    padding: 8px 16px;
-    background: #f0f0f0;
-    border: none;
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
     cursor: pointer;
-    border-radius: 6px;
-    transition: background 0.3s;
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .back-button:hover {
     background-color: #e0e0e0;
 }
 
+.blog-header-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.icon-button {
+    background-color: transparent;
+    border: none;
+    margin: 3px 2px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.2s ease-in-out;
+}
+
+.icon-button:hover {
+    color: #007bff;
+}
+
 
 /* Form Elements */
 
+.blog-form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
 .blog-form label {
-    margin-top: 16px;
-    display: block;
-    font-weight: 600;
-    font-size: 15px;
+    margin-top: 10px;
+}
+
+.blog-form input {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .blog-form input,
