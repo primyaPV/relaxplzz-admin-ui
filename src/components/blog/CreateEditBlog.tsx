@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../css/blog/CreateEditBlog.css';
 import CKEditorWrapper from './CKEditorWrapper';
+import { useNavigate } from 'react-router-dom';
 import { FaImage, FaLink, FaFileAlt } from 'react-icons/fa';
 
 export interface BlogPost {
@@ -35,7 +36,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   const [contentEditors, setContentEditors] = useState<string[]>(['']); // Start with one content editor
   const [linkFields, setLinkFields] = useState<string[]>([]); // Start with no link fields
   const [fieldOrder, setFieldOrder] = useState<string[]>(['image', 'content']); // Start with image and content fields already
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (initialData) {
       const { id, images, links, ...rest } = initialData;
@@ -85,8 +86,20 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ ...formData, images: imageFields, links: linkFields });
+  
+    const combinedContent = contentEditors.join('<br><br>');
+  
+    const blogData = { 
+      ...formData, 
+      images: imageFields, 
+      links: linkFields, 
+      content: combinedContent 
+    };
+  console.log("preview data",blogData);
+    onSubmit(blogData); 
+    navigate('/previewblog', { state: blogData }); 
   };
+  
 
   const handleReset = () => {
     setFormData({
@@ -145,16 +158,17 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           if (field === 'content') {
             return (
               <div key={index}>
-                <label>Content {index + 1}</label>
+                <label>Content </label>
+
                 <CKEditorWrapper
-                  value={contentEditors[index]}
-                  onChange={(value) => {
-                    const updatedContentEditors = [...contentEditors];
-                    updatedContentEditors[index] = value;
-                    setContentEditors(updatedContentEditors);
-                  }}
-                  className="custom-ckeditor"
-                />
+                
+  value=" "
+  onChange={(value) => {
+    const updatedContentEditors = [...contentEditors];
+    updatedContentEditors[index] = value;
+    setContentEditors(updatedContentEditors);
+  }}
+/>
               </div>
             );
           }
@@ -162,7 +176,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           if (field === 'link') {
             return (
               <div key={index}>
-                <label>Link {index + 1}</label>
+                <label>Link</label>
                 <input
                   type="url"
                   value={linkFields[index]}
@@ -177,7 +191,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           if (field === 'image') {
             return (
               <div key={index}>
-                <label>Upload Image {index + 1}</label>
+                <label>Upload Image </label>
                 <input
                   type="file"
                   accept="image/*"

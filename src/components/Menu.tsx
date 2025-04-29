@@ -1,12 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // Import Link for routing
 import logo from '../../src/assets/site-logo-white-2.webp'; 
 import '../css/Menu.css';
 
-interface MenuProps {
-  onMenuClick: (page: string) => void;
-}
-
-const Menu: React.FC<MenuProps> = ({ onMenuClick }) => {
+const Menu: React.FC = () => {
   return (
     <div className="menu">
       <div className="logo">
@@ -26,8 +23,12 @@ const Menu: React.FC<MenuProps> = ({ onMenuClick }) => {
             <i className="fas fa-user"></i> Credentials
           </label>
           <ul className="submenu">
-            <li onClick={() => onMenuClick('address')}>• Address</li>
-            <li onClick={() => onMenuClick('link')}>• Link</li>
+            <li>
+              <Link to="/address">• Address</Link> {/* Use Link component */}
+            </li>
+            <li>
+              <Link to="/link">• Link</Link> {/* Use Link component */}
+            </li>
           </ul>
         </li>
 
@@ -37,21 +38,26 @@ const Menu: React.FC<MenuProps> = ({ onMenuClick }) => {
             <i className="fas fa-home"></i> HomePage
           </label>
           <ul className="submenu">
-            <li onClick={() => onMenuClick('banners')}>• Banners</li>
-            <li onClick={() => onMenuClick('midbanners')}>• Mid Banners</li>
+            <li>
+              <Link to="/banners">• Banners</Link> {/* Use Link component */}
+            </li>
+            <li>
+              <Link to="/midbanners">• Mid Banners</Link> {/* Use Link component */}
+            </li>
           </ul>
         </li>
 
         <li className="menu-item">
-  <input type="checkbox" id="gallery" className="toggle" />
-  <label htmlFor="gallery">
-    <i className="fas fa-image"></i> Gallery
-  </label>
-  <ul className="submenu">
-    <li onClick={() => onMenuClick('imagevideo')}>• Image/Video</li>
-    
-  </ul>
-</li>
+          <input type="checkbox" id="gallery" className="toggle" />
+          <label htmlFor="gallery">
+            <i className="fas fa-image"></i> Gallery
+          </label>
+          <ul className="submenu">
+            <li>
+              <Link to="/imagevideo">• Image/Video</Link> {/* Use Link component */}
+            </li>
+          </ul>
+        </li>
 
         <li className="menu-item">
           <input type="checkbox" id="enquiry-list" className="toggle" />
@@ -59,19 +65,23 @@ const Menu: React.FC<MenuProps> = ({ onMenuClick }) => {
             <i className="fas fa-clipboard-list"></i> Enquiry List
           </label>
           <ul className="submenu">
-            <li onClick={() => onMenuClick('enquirylist')}>• Enquiry List</li>
+            <li>
+              <Link to="/enquirylist">• Enquiry List</Link> {/* Use Link component */}
+            </li>
           </ul>
         </li>
+
         <li className="menu-item">
           <input type="checkbox" id="blog" className="toggle" />
           <label htmlFor="blog">
             <i className="fas fa-blog"></i> Blog Management
           </label>
           <ul className="submenu">
-            <li onClick={() => onMenuClick('blog')}>• Blog</li>
+            <li>
+              <Link to="/blog">• Blog</Link> {/* Use Link component */}
+            </li>
           </ul>
         </li>
-        
       </ul>
     </div>
   );

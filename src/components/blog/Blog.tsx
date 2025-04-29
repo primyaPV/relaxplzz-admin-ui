@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../../css/blog/Blog.css';
 import image1 from '../../assets/banner1.jpeg';
+import { Link, useNavigate } from 'react-router-dom';
 
 export interface BlogPost {
   id: number;
@@ -57,6 +58,7 @@ const Blog: React.FC<BlogProps> = ({ onCreateBlog, setEditBlog }) => {
       status: 'active',
     },
   ]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -95,9 +97,15 @@ const Blog: React.FC<BlogProps> = ({ onCreateBlog, setEditBlog }) => {
     <div className="blog-page">
       <header className="blog-header">
         <h1>Blog Management</h1>
-        <button className="create-blog-button" onClick={onCreateBlog}>
-          <i className="fas fa-plus"></i>
-        </button>
+        <button
+  className="create-blog-button"
+  onClick={() => {
+    onCreateBlog();    // clears editBlog state
+    navigate('/createblog'); // navigates to CreateEditBlog page
+  }}
+>
+  <i className="fas fa-plus"></i> 
+</button>
       </header>
 
       <div className="blog-table-container">

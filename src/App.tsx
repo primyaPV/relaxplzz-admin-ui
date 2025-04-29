@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { lazy, useState } from 'react';
 import './App.css';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'; // import Router and Routes
 import Menu from './components/Menu';
 import Address from './components/credentials/Address';
 import Banners from './components/Banners';
@@ -9,20 +10,16 @@ import LinkPage from './components/credentials/Link';
 import EnquiryList from './components/enquiry/EnquiryList';
 import Blog from './components/blog/Blog';
 import CreateEditBlog from './components/blog/CreateEditBlog';
-import { BlogPost } from './components/blog/CreateEditBlog'; // ensure BlogPost is exported properly
+import { BlogPost } from './components/blog/CreateEditBlog'; 
+
+const PreviewBlog = lazy(() => import('./components/blog/PreviewBlog'));
 
 const App: React.FC = () => {
-  const [activePage, setActivePage] = useState<string>('');
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [editBlog, setEditBlog] = useState<BlogPost | null>(null);
 
-  const handleMenuClick = (page: string) => {
-    setActivePage(page);
-  };
-
   const handleCreateBlog = () => {
     setEditBlog(null);
-    setActivePage('createblog');
   };
 
   const handleSubmitBlog = (data: Omit<BlogPost, 'id'>) => {
@@ -39,41 +36,53 @@ const App: React.FC = () => {
       setBlogs([...blogs, newBlog]);
     }
 
-    setActivePage('blog');
     setEditBlog(null);
   };
 
   return (
-    <div className="app">
-      <Menu onMenuClick={handleMenuClick} />
+    <Router>
+      <div className="app">
+        <Menu />
 
-      {activePage === 'address' && <Address />}
-      {activePage === 'banners' && <Banners />}
-      {activePage === 'midbanners' && <MidBanners />}
-      {activePage === 'imagevideo' && <ImageVideoManagement />}
-      {activePage === 'link' && <LinkPage />} 
-      {activePage === 'enquirylist' && <EnquiryList />} 
-      
-      {activePage === 'blog' && (
-        <Blog
-          blogs={blogs}
-          setEditBlog={(blog) => {
-            setEditBlog(blog);
-            setActivePage('createblog');
-          }}
-          onCreateBlog={handleCreateBlog}
-          setBlogs={setBlogs}
-        />
-      )}
+        <Routes>
+          <Route path="/address" element={<Address />} />
+          <Route path="/banners" element={<Banners />} />
+          <Route path="/midbanners" element={<MidBanners />} />
+          <Route path="/imagevideo" element={<ImageVideoManagement />} />
+          <Route path="/link" element={<LinkPage />} />
+          <Route path="/enquirylist" element={<EnquiryList />} />
+          <Route path="/previewblog" element={<PreviewBlog />} />
+          
+          <Route
+            path="/blog"
+            element={
+              <Blog
+                blogs={blogs}
+                setEditBlog={(blog) => {
+                  setEditBlog(blog);
+                }}
+                onCreateBlog={handleCreateBlog}
+                setBlogs={setBlogs}
+              />
+            }
+          />
 
-      {activePage === 'createblog' && (
-        <CreateEditBlog
-          onClose={() => setActivePage('blog')}
-          onSubmit={handleSubmitBlog}
-          initialData={editBlog}
-        />
-      )}
-    </div>
+          <Route
+            path="/createblog"
+            element={
+              <CreateEditBlog
+              onSubmit={handleSubmitBlog}
+              onClose={() => setEditBlog(null)}
+              initialData={editBlog}
+            />
+            }
+          />
+          
+
+        </Routes>
+        
+      </div>
+    </Router>
   );
 };
 

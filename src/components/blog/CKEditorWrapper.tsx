@@ -24,6 +24,7 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ value, onChange, clas
       window.ClassicEditor &&
       !editorInstanceRef.current
     ) {
+      console.log("value...........",value)
       const editorDiv = document.createElement('div');
       editorContainerRef.current.innerHTML = ''; // Clear previous
       editorContainerRef.current.appendChild(editorDiv);
