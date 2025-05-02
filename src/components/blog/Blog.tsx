@@ -1,18 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../../css/blog/Blog.css';
 import image1 from '../../assets/banner1.jpeg';
-import { Link, useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 
 export interface BlogPost {
   id: number;
   title: string;
-  images: string[];
-  links: string[];
   date: string;
-  description: string;
-  content: string;
+  author: string;
   status: 'active' | 'inactive';
-  author?: string;  // Add author field if needed
+  fields: {
+    type: 'image' | 'content' | 'link';
+    value: string;
+  }[];
 }
 
 interface BlogProps {
@@ -31,34 +31,29 @@ const Blog: React.FC<BlogProps> = ({ onCreateBlog, setEditBlog }) => {
     {
       id: 1,
       title: 'How to Start Blogging in 2024',
-      images: [image1],
-      links: ['https://example.com/start-blogging'],
       date: '2024-04-01',
-      description: 'Learn the basics of how to start a blog from scratch.',
-      content: 'This blog will walk you through the process of choosing a niche, selecting a platform, and growing your audience...',
+      author: 'Jane Doe',
       status: 'active',
+      fields: [
+        { type: 'image', value: image1 },
+        { type: 'content', value: 'This blog will walk you through the process of choosing a niche, selecting a platform, and growing your audience...' },
+        { type: 'link', value: 'https://example.com/start-blogging' }
+      ]
     },
     {
       id: 2,
       title: '10 Tools Every Blogger Needs',
-      images: [image1],
-      links: ['https://example.com/blogging-tools'],
       date: '2024-03-15',
-      description: 'Must-have tools to enhance your blogging workflow.',
-      content: 'From content planners to SEO analyzers, this article lists ten essential tools that streamline your blogging efforts...',
+      author: 'John Smith',
       status: 'inactive',
-    },
-    {
-      id: 3,
-      title: 'Maximize Traffic With SEO in 2024',
-      images: [image1],
-      links: ['https://example.com/seo-guide'],
-      date: '2024-02-10',
-      description: 'Boost your blog traffic with updated SEO strategies.',
-      content: '2024 SEO trends are shifting. Here’s how to stay ahead of the game using keyword clustering, AI tools, and schema markup...',
-      status: 'active',
-    },
+      fields: [
+        { type: 'image', value: image1 },
+        { type: 'content', value: 'From content planners to SEO analyzers, this article lists ten essential tools that streamline your blogging efforts...' },
+        { type: 'link', value: 'https://example.com/blogging-tools' }
+      ]
+    }
   ]);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -126,17 +121,19 @@ const Blog: React.FC<BlogProps> = ({ onCreateBlog, setEditBlog }) => {
                 <td>{blog.id}</td>
                 <td>{blog.title}</td>
                 <td>
-                  {blog.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt="blog"
-                      className="blog-image"
-                      width="100"
-                      height="60"
-                    />
-                  ))}
-                </td>
+  {blog.fields
+    .filter(field => field.type === 'image')
+    .map((imageField, index) => (
+      <img
+        key={index}
+        src={imageField.value}
+        alt={`blog-${index}`}
+        className="blog-image"
+        width="100"
+        height="60"
+      />
+  ))}
+</td>
                 <td>
   <select
     value={blog.status}
@@ -173,28 +170,25 @@ const Blog: React.FC<BlogProps> = ({ onCreateBlog, setEditBlog }) => {
       </div>
 
       {/* Preview Modal */}
-      {previewBlog && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <button className="close-modal-button" onClick={() => setPreviewBlog(null)}>
-              ×
-            </button>
-            <h2>{previewBlog.title}</h2>
-            {previewBlog.images.map((image, index) => (
-              <img key={index} src={image} alt="" style={{ width: '100%' }} />
-            ))}
-            <p>{previewBlog.description}</p>
-            <p>{previewBlog.content}</p>
-            {previewBlog.links.map((link, index) => (
-              <div key={index}>
-                <a href={link} target="_blank" rel="noreferrer">
-                  {link}
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {previewBlog && previewBlog.fields.map((field, index) => {
+  if (field.type === 'image') {
+    return <img key={index} src={field.value} alt={`Blog ${index}`} style={{ width: '100%', marginBottom: '10px' }} />;
+  }
+  if (field.type === 'content') {
+    return <p key={index} dangerouslySetInnerHTML={{ __html: field.value }} />;
+  }
+  if (field.type === 'link') {
+    return (
+      <div key={index}>
+        <a href={field.value} target="_blank" rel="noreferrer">
+          {field.value}
+        </a>
+      </div>
+    );
+  }
+  return null;
+})}
+
 
       {/* Delete Confirmation Modal */}
       {blogToDelete && (

@@ -7,15 +7,14 @@ import { FaImage, FaLink, FaFileAlt } from 'react-icons/fa';
 export interface BlogPost {
   id: number;
   title: string;
-  images: string[];
-  links: string[];
   date: string;
-  description: string;
-  content: string;
+  author: string;
   status: 'active' | 'inactive';
-  author?: string; 
+  fields: {
+    type: 'image' | 'content' | 'link';
+    value: string;
+  }[];
 }
-
 
 interface BlogPostFormProps {
   onClose: () => void;
@@ -26,101 +25,83 @@ interface BlogPostFormProps {
 const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState<Omit<BlogPost, 'id'>>({
     title: '',
-    images: [],
-    links: [],
     date: new Date().toISOString().slice(0, 10),
-    description: '',
-    content: '',
-    status: 'active',
     author: '',
+    status: 'active',
+    fields: [
+      { type: 'image', value: '' },  // Pre-populate one image upload field
+      { type: 'content', value: '<p>Default content goes here...</p>' }, // Pre-populate one content field
+    ],
   });
 
-  const [imageFields, setImageFields] = useState<string[]>(['']); // Start with one image field
-  const [contentEditors, setContentEditors] = useState<string[]>(['']); // Start with one content editor
-  const [linkFields, setLinkFields] = useState<string[]>([]); // Start with no link fields
-  const [fieldOrder, setFieldOrder] = useState<string[]>(['image', 'content']); // Start with image and content fields already
   const navigate = useNavigate();
+
+  // Initialize form data if editing
   useEffect(() => {
     if (initialData) {
-      const { id, images, links, ...rest } = initialData;
-      setFormData({
-        ...rest,
-        images: images || [],
-        links: links || [],
-        author: rest.author || '', // ← Add this
-      });
-      setImageFields(images || []);
-      setLinkFields(links || []);
+      const { id, ...rest } = initialData;
+      setFormData(rest);
     }
   }, [initialData]);
-  
 
   const handleChange = (field: keyof typeof formData, value: any) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const addImageField = () => {
+    setFormData((prev) => ({
+      ...prev,
+      fields: [...prev.fields, { type: 'image', value: '' }],
+    }));
+  };
+
+  const addContentField = () => {
+    setFormData((prev) => ({
+      ...prev,
+      fields: [
+        ...prev.fields,
+        { type: 'content', value: '<p>Default content goes here...</p>' }, // Add default content field
+      ],
+    }));
+  };
+
+  const addLinkField = () => {
+    setFormData((prev) => ({
+      ...prev,
+      fields: [...prev.fields, { type: 'link', value: '' }],
+    }));
+  };
+
+  const updateFieldValue = (index: number, value: string) => {
+    const updatedFields = [...formData.fields];
+    updatedFields[index].value = value;
+    setFormData((prev) => ({ ...prev, fields: updatedFields }));
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     if (e.target.files && e.target.files[0]) {
       const imageUrl = URL.createObjectURL(e.target.files[0]);
-      const updatedImages = [...imageFields];
-      updatedImages[index] = imageUrl;
-      setImageFields(updatedImages);
+      updateFieldValue(index, imageUrl);
     }
-  };
-
-  const handleAddImageField = () => {
-    setImageFields([...imageFields, '']); // Add a new empty image field
-    setFieldOrder([...fieldOrder, 'image']); // Track that "image" field was added
-  };
-
-  const handleAddContentEditor = () => {
-    setContentEditors([...contentEditors, '']); // Add a new content editor
-    setFieldOrder([...fieldOrder, 'content']); // Track that "content" field was added
-  };
-
-  const handleAddLinkField = () => {
-    setLinkFields([...linkFields, '']); // Add a new link input field
-    setFieldOrder([...fieldOrder, 'link']); // Track that "link" field was added
-  };
-
-  const handleLinkChange = (value: string, index: number) => {
-    const updatedLinks = [...linkFields];
-    updatedLinks[index] = value;
-    setLinkFields(updatedLinks);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-  
-    const combinedContent = contentEditors.join('<br><br>');
-  
-    const blogData = { 
-      ...formData, 
-      images: imageFields, 
-      links: linkFields, 
-      content: combinedContent 
-    };
-  console.log("preview data",blogData);
-    onSubmit(blogData); 
-    navigate('/previewblog', { state: blogData }); 
+    onSubmit(formData); // Submit the form data
+    navigate('/previewblog', { state: formData }); // Navigate to the preview page
   };
-  
 
   const handleReset = () => {
     setFormData({
       title: '',
-      images: [],
-      links: [],
       date: new Date().toISOString().slice(0, 10),
-      description: '',
-      content: '',
+      author: '',
       status: 'active',
-      author: ''
+      fields: [
+        { type: 'image', value: '' },  // Pre-populate one image upload field
+        { type: 'content', value: '<p>Default content goes here...</p>' }, // Pre-populate one content field
+      ],
     });
-    setImageFields(['']); // Reset to have at least one image field
-    setContentEditors(['']); // Reset content editors
-    setLinkFields([]); // Reset link fields (no link input fields initially)
-    setFieldOrder(['image', 'content']); // Reset order to show image and content initially
   };
 
   return (
@@ -128,17 +109,10 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
       <header className="create-blog-header">
         <h1>{initialData ? 'Edit Blog Post' : 'Create Blog Post'}</h1>
         <button className="back-button" onClick={onClose}>← Back</button>
-
         <div className="blog-header-actions">
-          <button className="icon-button" title="Add Image" onClick={handleAddImageField}>
-            <FaImage />
-          </button>
-          <button className="icon-button" title="Add Content" onClick={handleAddContentEditor}>
-            <FaFileAlt />
-          </button>
-          <button className="icon-button" title="Add Link" onClick={handleAddLinkField}>
-            <FaLink />
-          </button>
+          <button className="icon-button" title="Add Image" onClick={addImageField}><FaImage /></button>
+          <button className="icon-button" title="Add Content" onClick={addContentField}><FaFileAlt /></button>
+          <button className="icon-button" title="Add Link" onClick={addLinkField}><FaLink /></button>
         </div>
       </header>
 
@@ -158,67 +132,61 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           onChange={(e) => handleChange('date', e.target.value)}
           required
         />
+
         <label>Author</label>
-<input
-  type="text"
-  value={formData.author}
-  onChange={(e) => handleChange('author', e.target.value)}
-  placeholder="Enter author name"
-  required
-/>
+        <input
+          type="text"
+          value={formData.author}
+          onChange={(e) => handleChange('author', e.target.value)}
+          required
+        />
 
-        {/* Render fields based on the order in fieldOrder */}
-        {fieldOrder.map((field, index) => {
-          if (field === 'content') {
+        {/* Render the fields (image, content, link) */}
+        {formData.fields.map((field, index) => {
+          if (field.type === 'content') {
             return (
               <div key={index}>
-                <label>Content </label>
-
+                <label>Content</label>
                 <CKEditorWrapper
-                
-  value=" "
-  onChange={(value) => {
-    const updatedContentEditors = [...contentEditors];
-    updatedContentEditors[index] = value;
-    setContentEditors(updatedContentEditors);
-  }}
-/>
-              </div>
-            );
-          }
-
-          if (field === 'link') {
-            return (
-              <div key={index}>
-                <label>Link</label>
-                <input
-                  type="url"
-                  value={linkFields[index]}
-                  onChange={(e) => handleLinkChange(e.target.value, index)} // Handle link input change
-                  placeholder="Enter link"
-                  required
+                  value={field.value}
+                  onChange={(value) => updateFieldValue(index, value)}
                 />
               </div>
             );
           }
 
-          if (field === 'image') {
+          if (field.type === 'image') {
             return (
               <div key={index}>
-                <label>Upload Image </label>
+                <label>Upload Image</label>
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageUpload(e, index)} // Handling image upload
+                  onChange={(e) => handleImageUpload(e, index)}
                 />
-                {imageFields[index] && (
+                {field.value && (
                   <img
-                    src={imageFields[index]}
+                    src={field.value}
                     alt={`Preview ${index + 1}`}
                     width="200"
                     style={{ marginTop: '10px', borderRadius: '6px' }}
                   />
                 )}
+              </div>
+            );
+          }
+
+          if (field.type === 'link') {
+            return (
+              <div key={index}>
+                <label>Link</label>
+                <input
+                  type="url"
+                  value={field.value}
+                  onChange={(e) => updateFieldValue(index, e.target.value)}
+                  placeholder="Enter link"
+                  required
+                />
               </div>
             );
           }
