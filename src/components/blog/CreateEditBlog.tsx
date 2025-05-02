@@ -13,7 +13,9 @@ export interface BlogPost {
   description: string;
   content: string;
   status: 'active' | 'inactive';
+  author?: string; 
 }
+
 
 interface BlogPostFormProps {
   onClose: () => void;
@@ -30,6 +32,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     description: '',
     content: '',
     status: 'active',
+    author: '',
   });
 
   const [imageFields, setImageFields] = useState<string[]>(['']); // Start with one image field
@@ -44,11 +47,13 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
         ...rest,
         images: images || [],
         links: links || [],
+        author: rest.author || '', // ← Add this
       });
       setImageFields(images || []);
       setLinkFields(links || []);
     }
   }, [initialData]);
+  
 
   const handleChange = (field: keyof typeof formData, value: any) => {
     setFormData({ ...formData, [field]: value });
@@ -110,6 +115,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
       description: '',
       content: '',
       status: 'active',
+      author: ''
     });
     setImageFields(['']); // Reset to have at least one image field
     setContentEditors(['']); // Reset content editors
@@ -152,6 +158,14 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           onChange={(e) => handleChange('date', e.target.value)}
           required
         />
+        <label>Author</label>
+<input
+  type="text"
+  value={formData.author}
+  onChange={(e) => handleChange('author', e.target.value)}
+  placeholder="Enter author name"
+  required
+/>
 
         {/* Render fields based on the order in fieldOrder */}
         {fieldOrder.map((field, index) => {

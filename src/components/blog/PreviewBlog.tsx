@@ -9,37 +9,27 @@ const PreviewBlog: React.FC = () => {
 
   return (
     <div className="blog-container">
-      {/* Featured Image */}
-      
 
-      {/* Title and Meta */}
       <div className="blog-header">
         <h1 className="blog-title">{blogData.title}</h1>
-        <p className="blog-meta">
-          Published on {new Date(blogData.date).toLocaleDateString()}
-        </p>
       </div>
+
       {blogData.images && blogData.images.length > 0 && (
         <div className="featured-image">
           <img src={blogData.images[0]} alt="Featured" />
         </div>
       )}
-      {/* Blog Content */}
-      <div className="blog-content">
-        {/* Full content (from CKEditor) */}
-        <div
-          dangerouslySetInnerHTML={{ __html: blogData.content }}
-        />
 
-        {/* Inline other images if available */}
-        {blogData.images && blogData.images.slice(1).map((imgUrl, idx) => (
-          <div key={idx} className="content-image">
-            <img src={imgUrl} alt={`Blog Content ${idx + 2}`} />
-          </div>
-        ))}
+      <div className="blog-content">
+        <div dangerouslySetInnerHTML={{ __html: blogData.content }} />
       </div>
 
-      {/* Related Links */}
+      {blogData.images && blogData.images.slice(1).map((imgUrl, idx) => (
+        <div key={idx} className="content-image">
+          <img src={imgUrl} alt={`Blog Content`} />
+        </div>
+      ))}
+
       {blogData.links && blogData.links.length > 0 && (
         <div className="related-links">
           <h3>Related Links</h3>
@@ -54,6 +44,12 @@ const PreviewBlog: React.FC = () => {
           </ul>
         </div>
       )}
+
+      <div className="blog-footer">
+        <p>Published on {new Date(blogData.date).toLocaleDateString()}</p>
+        <p>By <strong>{blogData.author || 'Unknown Author'}</strong></p>
+      </div>
+
     </div>
   );
 };

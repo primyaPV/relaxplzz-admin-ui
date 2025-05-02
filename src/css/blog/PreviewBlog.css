@@ -77,3 +77,12 @@
 .related-links a:hover {
     text-decoration: underline;
 }
+
+.blog-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+    font-size: 0.95rem;
+    color: #555;
+    text-align: right;
+}

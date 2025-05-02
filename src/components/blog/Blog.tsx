@@ -12,6 +12,7 @@ export interface BlogPost {
   description: string;
   content: string;
   status: 'active' | 'inactive';
+  author?: string;  // Add author field if needed
 }
 
 interface BlogProps {
