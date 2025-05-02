@@ -39,7 +39,7 @@
 }
 
 .blog-content p {
-    margin-bottom: 20px;
+    margin-bottom: -5px;
 }
 
 .content-image img {
@@ -79,10 +79,10 @@
 }
 
 .blog-footer {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #ccc;
-    font-size: 0.95rem;
+    margin-top: 23px;
+    padding-top: 16px;
+    border-top: 2px solid #ccc;
+    font-size: 0.99rem;
     color: #555;
-    text-align: right;
+    margin-left: 3px;
 }

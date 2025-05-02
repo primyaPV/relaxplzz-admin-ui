@@ -65,6 +65,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     }));
   };
 
+  // This function adds a link field to the formData
   const addLinkField = () => {
     setFormData((prev) => ({
       ...prev,
