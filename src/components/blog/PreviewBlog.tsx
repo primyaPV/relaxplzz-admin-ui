@@ -19,7 +19,7 @@ const PreviewBlog: React.FC = () => {
   };
 
   const handleBackToEdit = () => {
-    navigate('/createblog', { state: blogData }); 
+    navigate('/createblog', { state: blogData });
   };
 
   const handlePublish = () => {

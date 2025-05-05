@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../css/blog/CreateEditBlog.css';
 import CKEditorWrapper from './CKEditorWrapper';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FaImage, FaFileAlt, FaVideo, FaYoutube } from 'react-icons/fa';
 
 export interface BlogPost {
@@ -35,13 +35,25 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
 
+  
   useEffect(() => {
-    if (initialData) {
+    console.log("Received state:", location.state); // Debugging line
+    if (location.state) {
+      const { id, ...rest } = location.state as BlogPost;
+      setFormData({
+        ...rest,
+        date: rest.date || new Date().toISOString().slice(0, 10),
+      });
+    } else if (initialData) {
       const { id, ...rest } = initialData;
-      setFormData(rest);
+      setFormData({
+        ...rest,
+        date: rest.date || new Date().toISOString().slice(0, 10),
+      });
     }
-  }, [initialData]);
+  }, [location.state, initialData]);
 
   const handleChange = (field: keyof typeof formData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -181,14 +193,14 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
                   accept="image/*"
                   onChange={(e) => handleImageUpload(e, index)}
                 />
-                {field.value && (
-                  <img
-                    src={field.value}
-                    alt={`Preview ${index + 1}`}
-                    width="200"
-                    style={{ marginTop: '10px', borderRadius: '6px' }}
-                  />
-                )}
+                {field.value && field.value !== "" && (
+  <img
+    src={field.value}
+    alt={`Preview ${index + 1}`}
+    width="200"
+    style={{ marginTop: '10px', borderRadius: '6px' }}
+  />
+)}
               </div>
             );
           }
@@ -203,12 +215,13 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
                   accept="video/*"
                   onChange={(e) => handleVideoUpload(e, index)}
                 />
-                {field.value && (
-                  <video width="320" height="240" controls style={{ marginTop: '10px', borderRadius: '6px' }}>
-                    <source src={field.value} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                )}
+                {field.value && field.value !== "" && (
+  <video width="320" height="240" controls style={{ marginTop: '10px', borderRadius: '6px' }}>
+    <source src={field.value} type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+)}
+
               </div>
             );
           }
@@ -224,19 +237,18 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
                   value={field.value}
                   onChange={(e) => updateFieldValue(index, e.target.value)}
                 />
-                {field.value && extractYouTubeID(field.value) && (
-                  <div style={{ marginTop: '10px' }}>
-                    <iframe
-                      width="320"
-                      height="180"
-                      src={`https://www.youtube.com/embed/${extractYouTubeID(field.value)}`}
-                      title="YouTube video preview"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-                )}
+                {field.value && field.value !== "" && extractYouTubeID(field.value) && (
+  <iframe
+    width="320"
+    height="180"
+    src={`https://www.youtube.com/embed/${extractYouTubeID(field.value)}`}
+    title="YouTube video preview"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  ></iframe>
+)}
+
               </div>
             );
           }
