@@ -10,7 +10,7 @@ export interface BlogPost {
   author: string;
   status: 'active' | 'inactive';
   fields: {
-    type: 'image' | 'content' | 'link';
+    type: 'image' | 'content' | 'video';
     value: string;
   }[];
 }
@@ -36,8 +36,8 @@ const Blog: React.FC<BlogProps> = ({ onCreateBlog, setEditBlog }) => {
       status: 'active',
       fields: [
         { type: 'image', value: image1 },
-        { type: 'content', value: 'This blog will walk you through the process of choosing a niche, selecting a platform, and growing your audience...' },
-        { type: 'link', value: 'https://example.com/start-blogging' }
+        { type: 'content', value: 'This blog will walk you through the process...' },
+        { type: 'video', value: 'https://www.w3schools.com/html/mov_bbb.mp4' } // example video
       ]
     },
     {
@@ -49,7 +49,7 @@ const Blog: React.FC<BlogProps> = ({ onCreateBlog, setEditBlog }) => {
       fields: [
         { type: 'image', value: image1 },
         { type: 'content', value: 'From content planners to SEO analyzers, this article lists ten essential tools that streamline your blogging efforts...' },
-        { type: 'link', value: 'https://example.com/blogging-tools' }
+        { type: 'video', value: 'https://www.w3schools.com/html/mov_bbb.mp4' }
       ]
     }
   ]);
@@ -177,12 +177,13 @@ const Blog: React.FC<BlogProps> = ({ onCreateBlog, setEditBlog }) => {
   if (field.type === 'content') {
     return <p key={index} dangerouslySetInnerHTML={{ __html: field.value }} />;
   }
-  if (field.type === 'link') {
+  if (field.type === 'video') {
     return (
-      <div key={index}>
-        <a href={field.value} target="_blank" rel="noreferrer">
-          {field.value}
-        </a>
+      <div key={index} style={{ marginBottom: '10px' }}>
+        <video width="100%" controls>
+          <source src={field.value} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </div>
     );
   }

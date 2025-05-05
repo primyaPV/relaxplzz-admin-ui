@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../css/blog/CreateEditBlog.css';
 import CKEditorWrapper from './CKEditorWrapper';
 import { useNavigate } from 'react-router-dom';
-import { FaImage, FaLink, FaFileAlt } from 'react-icons/fa';
+import { FaImage, FaLink, FaFileAlt, FaVideo } from 'react-icons/fa';
 
 export interface BlogPost {
   id: number;
@@ -11,7 +11,7 @@ export interface BlogPost {
   author: string;
   status: 'active' | 'inactive';
   fields: {
-    type: 'image' | 'content' | 'link';
+    type: 'image' | 'content' | 'video';
     value: string;
   }[];
 }
@@ -65,12 +65,18 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     }));
   };
 
-  // This function adds a link field to the formData
-  const addLinkField = () => {
+  const addVideoField = () => {
     setFormData((prev) => ({
       ...prev,
-      fields: [...prev.fields, { type: 'link', value: '' }],
+      fields: [...prev.fields, { type: 'video', value: '' }],
     }));
+  };
+
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    if (e.target.files && e.target.files[0]) {
+      const videoUrl = URL.createObjectURL(e.target.files[0]);
+      updateFieldValue(index, videoUrl);
+    }
   };
 
   const updateFieldValue = (index: number, value: string) => {
@@ -83,6 +89,13 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     if (e.target.files && e.target.files[0]) {
       const imageUrl = URL.createObjectURL(e.target.files[0]);
       updateFieldValue(index, imageUrl);
+    }
+  };
+
+  const handleLinkUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    if (e.target.files && e.target.files[0]) {
+      const linkUrl = URL.createObjectURL(e.target.files[0]);
+      updateFieldValue(index, linkUrl);
     }
   };
 
@@ -113,7 +126,8 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
         <div className="blog-header-actions">
           <button className="icon-button" title="Add Image" onClick={addImageField}><FaImage /></button>
           <button className="icon-button" title="Add Content" onClick={addContentField}><FaFileAlt /></button>
-          <button className="icon-button" title="Add Link" onClick={addLinkField}><FaLink /></button>
+          <button className="icon-button" title="Add Video" onClick={addVideoField}><FaVideo /></button>
+
         </div>
       </header>
 
@@ -177,17 +191,21 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
             );
           }
 
-          if (field.type === 'link') {
+          if (field.type === 'video') {
             return (
               <div key={index}>
-                <label>Link</label>
+                <label>Upload Video</label>
                 <input
-                  type="url"
-                  value={field.value}
-                  onChange={(e) => updateFieldValue(index, e.target.value)}
-                  placeholder="Enter link"
-                  required
+                  type="file"
+                  accept="video/*"
+                  onChange={(e) => handleVideoUpload(e, index)}
                 />
+                {field.value && (
+                  <video width="320" height="240" controls style={{ marginTop: '10px', borderRadius: '6px' }}>
+                    <source src={field.value} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
               </div>
             );
           }

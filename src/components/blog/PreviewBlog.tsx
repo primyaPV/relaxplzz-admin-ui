@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { BlogPost } from './CreateEditBlog'; // Make sure it has 'fields' in the type
+import { BlogPost } from './CreateEditBlog';
 import '../../css/blog/PreviewBlog.css';
 
 const PreviewBlog: React.FC = () => {
@@ -21,21 +21,22 @@ const PreviewBlog: React.FC = () => {
       <div className="blog-content">
         {fields.map((field, index) => {
           if (field.type === 'image' && !firstImageRendered) {
-            firstImageRendered = true; // Mark that the first image has been rendered
+            firstImageRendered = true;
             return (
               <div key={index} className="content-image">
                 <img src={field.value} alt={`Blog content ${index}`} />
-                {/* Show the published date and author directly below the first image */}
                 <div className="blog-footer">
-                <p>
-    <span>Published on {new Date(blogData.date).toLocaleDateString()}</span>
-    <span style={{ marginLeft: '20px' }}>Author: <strong>{blogData.author || 'Unknown Author'}</strong></span>
-          </p>
-                  
+                  <p>
+                    <span>Published on {new Date(blogData.date).toLocaleDateString()}</span>
+                    <span style={{ marginLeft: '20px' }}>
+                      Author: <strong>{blogData.author || 'Unknown Author'}</strong>
+                    </span>
+                  </p>
                 </div>
               </div>
             );
           }
+
           if (field.type === 'image') {
             return (
               <div key={index} className="content-image">
@@ -43,6 +44,7 @@ const PreviewBlog: React.FC = () => {
               </div>
             );
           }
+
           if (field.type === 'content') {
             return (
               <div key={index} className="content-text">
@@ -50,16 +52,18 @@ const PreviewBlog: React.FC = () => {
               </div>
             );
           }
-          if (field.type === 'link') {
+
+          if (field.type === 'video') {
             return (
-              <div key={index} className="content-link">
-                <br></br>
-                <a href={field.value} target="_blank" rel="noopener noreferrer">
-                  {field.value}
-                </a>
+              <div key={index} className="content-video">
+                <video controls width="100%" style={{ marginBottom: '20px', borderRadius: '8px' }}>
+                  <source src={field.value} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               </div>
             );
           }
+
           return null;
         })}
       </div>
