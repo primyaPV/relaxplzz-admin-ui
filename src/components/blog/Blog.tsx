@@ -10,7 +10,7 @@ export interface BlogPost {
   author: string;
   status: 'active' | 'inactive';
   fields: {
-    type: 'image' | 'content' | 'video';
+    type: 'image' | 'content' | 'video'| 'youtube';
     value: string;
   }[];
 }

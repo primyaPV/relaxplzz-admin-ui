@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../css/blog/CreateEditBlog.css';
 import CKEditorWrapper from './CKEditorWrapper';
 import { useNavigate } from 'react-router-dom';
-import { FaImage, FaLink, FaFileAlt, FaVideo } from 'react-icons/fa';
+import { FaImage, FaFileAlt, FaVideo, FaYoutube } from 'react-icons/fa';
 
 export interface BlogPost {
   id: number;
@@ -11,7 +11,7 @@ export interface BlogPost {
   author: string;
   status: 'active' | 'inactive';
   fields: {
-    type: 'image' | 'content' | 'video';
+    type: 'image' | 'content' | 'video' | 'youtube';
     value: string;
   }[];
 }
@@ -29,14 +29,13 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     author: '',
     status: 'active',
     fields: [
-      { type: 'image', value: '' },  // Pre-populate one image upload field
-      { type: 'content', value: '<p>Default content goes here...</p>' }, // Pre-populate one content field
+      { type: 'image', value: '' },
+      { type: 'content', value: '<p>Default content goes here...</p>' },
     ],
   });
 
   const navigate = useNavigate();
 
-  // Initialize form data if editing
   useEffect(() => {
     if (initialData) {
       const { id, ...rest } = initialData;
@@ -58,10 +57,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   const addContentField = () => {
     setFormData((prev) => ({
       ...prev,
-      fields: [
-        ...prev.fields,
-        { type: 'content', value: '<p>Default content goes here...</p>' }, // Add default content field
-      ],
+      fields: [...prev.fields, { type: 'content', value: '<p>Default content goes here...</p>' }],
     }));
   };
 
@@ -70,6 +66,20 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
       ...prev,
       fields: [...prev.fields, { type: 'video', value: '' }],
     }));
+  };
+
+  const addYouTubeField = () => {
+    setFormData((prev) => ({
+      ...prev,
+      fields: [...prev.fields, { type: 'youtube', value: '' }],
+    }));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    if (e.target.files && e.target.files[0]) {
+      const imageUrl = URL.createObjectURL(e.target.files[0]);
+      updateFieldValue(index, imageUrl);
+    }
   };
 
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -85,24 +95,17 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     setFormData((prev) => ({ ...prev, fields: updatedFields }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    if (e.target.files && e.target.files[0]) {
-      const imageUrl = URL.createObjectURL(e.target.files[0]);
-      updateFieldValue(index, imageUrl);
-    }
-  };
-
-  const handleLinkUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    if (e.target.files && e.target.files[0]) {
-      const linkUrl = URL.createObjectURL(e.target.files[0]);
-      updateFieldValue(index, linkUrl);
-    }
+  const extractYouTubeID = (url: string): string => {
+    const match = url.match(
+      /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/
+    );
+    return match ? match[1] : '';
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData); // Submit the form data
-    navigate('/previewblog', { state: formData }); // Navigate to the preview page
+    onSubmit(formData);
+    navigate('/previewblog', { state: formData });
   };
 
   const handleReset = () => {
@@ -112,8 +115,8 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
       author: '',
       status: 'active',
       fields: [
-        { type: 'image', value: '' },  // Pre-populate one image upload field
-        { type: 'content', value: '<p>Default content goes here...</p>' }, // Pre-populate one content field
+        { type: 'image', value: '' },
+        { type: 'content', value: '<p>Default content goes here...</p>' },
       ],
     });
   };
@@ -127,7 +130,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           <button className="icon-button" title="Add Image" onClick={addImageField}><FaImage /></button>
           <button className="icon-button" title="Add Content" onClick={addContentField}><FaFileAlt /></button>
           <button className="icon-button" title="Add Video" onClick={addVideoField}><FaVideo /></button>
-
+          <button className="icon-button" title="Add YouTube Link" onClick={addYouTubeField}><FaYoutube /></button>
         </div>
       </header>
 
@@ -156,7 +159,6 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           required
         />
 
-        {/* Render the fields (image, content, link) */}
         {formData.fields.map((field, index) => {
           if (field.type === 'content') {
             return (
@@ -194,6 +196,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           if (field.type === 'video') {
             return (
               <div key={index}>
+                <br></br>
                 <label>Upload Video</label>
                 <input
                   type="file"
@@ -205,6 +208,34 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
                     <source src={field.value} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
+                )}
+              </div>
+            );
+          }
+
+          if (field.type === 'youtube') {
+            return (
+              <div key={index}>
+                <br></br>
+                <label>YouTube Video Link</label>
+                <input
+                  type="url"
+                  placeholder="Enter YouTube video URL"
+                  value={field.value}
+                  onChange={(e) => updateFieldValue(index, e.target.value)}
+                />
+                {field.value && extractYouTubeID(field.value) && (
+                  <div style={{ marginTop: '10px' }}>
+                    <iframe
+                      width="320"
+                      height="180"
+                      src={`https://www.youtube.com/embed/${extractYouTubeID(field.value)}`}
+                      title="YouTube video preview"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
                 )}
               </div>
             );

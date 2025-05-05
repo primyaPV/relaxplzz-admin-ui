@@ -10,14 +10,19 @@ const PreviewBlog: React.FC = () => {
 
   let firstImageRendered = false;
 
+  const extractYouTubeID = (url: string): string => {
+    const match = url.match(
+      /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/
+    );
+    return match ? match[1] : '';
+  };
+
   return (
     <div className="blog-container">
-      {/* Title */}
       <div className="blog-header">
         <h1 className="blog-title">{blogData.title}</h1>
       </div>
 
-      {/* Render fields in order */}
       <div className="blog-content">
         {fields.map((field, index) => {
           if (field.type === 'image' && !firstImageRendered) {
@@ -62,6 +67,23 @@ const PreviewBlog: React.FC = () => {
                 </video>
               </div>
             );
+          }
+
+          if (field.type === 'youtube') {
+            const videoId = extractYouTubeID(field.value);
+            return videoId ? (
+              <div key={index} className="content-youtube" style={{ marginBottom: '20px' }}>
+                <iframe
+                  width="100%"
+                  height="400"
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title="YouTube video preview"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            ) : null;
           }
 
           return null;
