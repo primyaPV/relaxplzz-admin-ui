@@ -19,7 +19,7 @@ const PreviewBlog: React.FC = () => {
   };
 
   const handleBackToEdit = () => {
-    navigate('/createeditblog', { state: blogData }); // Replace with actual edit route if different
+    navigate('/createblog', { state: blogData }); 
   };
 
   const handlePublish = () => {
