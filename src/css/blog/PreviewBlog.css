@@ -91,3 +91,33 @@
     text-align: center;
     margin: 20px 0;
 }
+
+
+/* buttons */
+
+.preview-actions button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+}
+
+.publish-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.publish-button:hover {
+    background-color: #218838;
+}
+
+.edit-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #0056b3;
+}

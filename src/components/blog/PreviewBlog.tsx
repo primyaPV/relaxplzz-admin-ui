@@ -1,10 +1,11 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BlogPost } from './CreateEditBlog';
 import '../../css/blog/PreviewBlog.css';
 
 const PreviewBlog: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const blogData = location.state as BlogPost;
   const fields = blogData?.fields ?? [];
 
@@ -15,6 +16,16 @@ const PreviewBlog: React.FC = () => {
       /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/
     );
     return match ? match[1] : '';
+  };
+
+  const handleBackToEdit = () => {
+    navigate('/createeditblog', { state: blogData }); // Replace with actual edit route if different
+  };
+
+  const handlePublish = () => {
+    // Placeholder for your publish logic
+    alert('Blog published!');
+    // Optionally, send to backend or navigate to another page
   };
 
   return (
@@ -88,6 +99,12 @@ const PreviewBlog: React.FC = () => {
 
           return null;
         })}
+      </div>
+
+      {/* Action Buttons */}
+      <div className="preview-actions" style={{ textAlign: 'center', marginTop: '40px' }}>
+        <button onClick={handlePublish} className="publish-button">Publish</button>
+        <button onClick={handleBackToEdit} className="edit-button" style={{ marginLeft: '20px' }}>Back to Edit</button>
       </div>
     </div>
   );
