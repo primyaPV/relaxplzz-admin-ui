@@ -1,6 +1,6 @@
 import React, { lazy, useState } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'; // import Router and Routes
+import { BrowserRouter as Router, Route, Routes} from 'react-router-dom'; // import Router and Routes
 import Menu from './components/Menu';
 import Address from './components/credentials/Address';
 import Banners from './components/Banners';
@@ -51,36 +51,43 @@ const App: React.FC = () => {
           <Route path="/imagevideo" element={<ImageVideoManagement />} />
           <Route path="/link" element={<LinkPage />} />
           <Route path="/enquirylist" element={<EnquiryList />} />
-          <Route path="/previewblog" element={<PreviewBlog />} />
           
+          {/* Lazy-loaded PreviewBlog */}
+          <Route 
+            path="/previewblog" 
+            element={
+              <React.Suspense fallback={<div>Loading...</div>}>
+                <PreviewBlog />
+              </React.Suspense>
+            } 
+          />
+
+          {/* Create/Edit Blog Route */}
+          <Route 
+            path="/createblog" 
+            element={
+              <CreateEditBlog
+                onSubmit={handleSubmitBlog}
+                onClose={() => setEditBlog(null)}
+                initialData={editBlog}
+              />
+            }
+          />
+          
+          {/* Blog List Route */}
           <Route
             path="/blog"
             element={
               <Blog
                 blogs={blogs}
-                setEditBlog={(blog) => {
-                  setEditBlog(blog);
-                }}
+                setEditBlog={(blog) => setEditBlog(blog)}
                 onCreateBlog={handleCreateBlog}
                 setBlogs={setBlogs}
               />
             }
           />
 
-          <Route
-            path="/createblog"
-            element={
-              <CreateEditBlog
-              onSubmit={handleSubmitBlog}
-              onClose={() => setEditBlog(null)}
-              initialData={editBlog}
-            />
-            }
-          />
-          
-
         </Routes>
-        
       </div>
     </Router>
   );
