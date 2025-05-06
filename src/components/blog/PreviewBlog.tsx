@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { BlogPost } from './CreateEditBlog';
+import { BlogPost } from './Blog'; // Make sure to import from the correct file
 import '../../css/blog/PreviewBlog.css';
 
 const PreviewBlog: React.FC = () => {
@@ -22,11 +22,14 @@ const PreviewBlog: React.FC = () => {
   };
 
   const handlePublish = () => {
-    // Placeholder for publish logic
-    alert('Blog published!');
-    // Optionally, send to backend or navigate to another page after publishing
+    // Navigate to blog page with the blog data
+    navigate('/blog', { 
+      state: { 
+        newBlog: blogData 
+      } 
+    });
   };
-
+  
   return (
     <div className="blog-container">
       <div className="blog-header">

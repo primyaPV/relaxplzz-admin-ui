@@ -1,16 +1,17 @@
 import React, { lazy, useState } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes} from 'react-router-dom'; // import Router and Routes
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+
 import Menu from './components/Menu';
 import Address from './components/credentials/Address';
 import Banners from './components/Banners';
 import MidBanners from './components/MidBanners';
 import ImageVideoManagement from './components/gallery/ImageVideo';
-import LinkPage from './components/credentials/Link'; 
+import LinkPage from './components/credentials/Link';
 import EnquiryList from './components/enquiry/EnquiryList';
 import Blog from './components/blog/Blog';
 import CreateEditBlog from './components/blog/CreateEditBlog';
-import { BlogPost } from './components/blog/CreateEditBlog'; 
+import { BlogPost } from './components/blog/CreateEditBlog';
 
 const PreviewBlog = lazy(() => import('./components/blog/PreviewBlog'));
 
@@ -35,7 +36,6 @@ const App: React.FC = () => {
       };
       setBlogs([...blogs, newBlog]);
     }
-
     setEditBlog(null);
   };
 
@@ -51,42 +51,44 @@ const App: React.FC = () => {
           <Route path="/imagevideo" element={<ImageVideoManagement />} />
           <Route path="/link" element={<LinkPage />} />
           <Route path="/enquirylist" element={<EnquiryList />} />
-          
-          {/* Lazy-loaded PreviewBlog */}
-          <Route 
-            path="/previewblog" 
+
+          {/* Preview Page */}
+          <Route
+            path="/previewblog"
             element={
               <React.Suspense fallback={<div>Loading...</div>}>
                 <PreviewBlog />
               </React.Suspense>
-            } 
+            }
           />
 
-          {/* Create/Edit Blog Route */}
-          <Route 
-  path="/createeditblog" 
-  element={
-    <CreateEditBlog
-      onSubmit={handleSubmitBlog}
-      onClose={() => setEditBlog(null)}
-      initialData={null} // Keep this null or remove the prop
-    />
-  }
-/>
-          
-          {/* Blog List Route */}
+          {/* Create/Edit Blog Page */}
+          <Route
+            path="/createeditblog"
+            element={
+              <CreateEditBlog
+                onSubmit={handleSubmitBlog}
+                onClose={() => setEditBlog(null)}
+                initialData={editBlog}
+              />
+            }
+          />
+
+          {/* Blog Listing Page */}
           <Route
             path="/blog"
             element={
               <Blog
                 blogs={blogs}
+                setBlogs={setBlogs}
                 setEditBlog={(blog) => setEditBlog(blog)}
                 onCreateBlog={handleCreateBlog}
-                setBlogs={setBlogs}
               />
             }
           />
 
+          {/* Default Route */}
+          <Route path="*" element={<Navigate to="/blog" />} />
         </Routes>
       </div>
     </Router>
