@@ -37,9 +37,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   const navigate = useNavigate();
   const location = useLocation();
 
-  
   useEffect(() => {
-    console.log("Received state:", location.state); // Debugging line
     if (location.state) {
       const { id, ...rest } = location.state as BlogPost;
       setFormData({
@@ -177,8 +175,8 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
               <div key={index}>
                 <label>Content</label>
                 <CKEditorWrapper
-                  value={field.value}
-                  onChange={(value) => updateFieldValue(index, value)}
+                  value={field.value}  // Pass the value of content
+                  onChange={(value) => updateFieldValue(index, value)}  // Update content on change
                 />
               </div>
             );
@@ -194,13 +192,13 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
                   onChange={(e) => handleImageUpload(e, index)}
                 />
                 {field.value && field.value !== "" && (
-  <img
-    src={field.value}
-    alt={`Preview ${index + 1}`}
-    width="200"
-    style={{ marginTop: '10px', borderRadius: '6px' }}
-  />
-)}
+                  <img
+                    src={field.value}
+                    alt={`Preview ${index + 1}`}
+                    width="200"
+                    style={{ marginTop: '10px', borderRadius: '6px' }}
+                  />
+                )}
               </div>
             );
           }
@@ -208,7 +206,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           if (field.type === 'video') {
             return (
               <div key={index}>
-                <br></br>
+                <br />
                 <label>Upload Video</label>
                 <input
                   type="file"
@@ -216,12 +214,11 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
                   onChange={(e) => handleVideoUpload(e, index)}
                 />
                 {field.value && field.value !== "" && (
-  <video width="320" height="240" controls style={{ marginTop: '10px', borderRadius: '6px' }}>
-    <source src={field.value} type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
-)}
-
+                  <video width="320" height="240" controls style={{ marginTop: '10px', borderRadius: '6px' }}>
+                    <source src={field.value} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
               </div>
             );
           }
@@ -229,7 +226,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           if (field.type === 'youtube') {
             return (
               <div key={index}>
-                <br></br>
+                <br />
                 <label>YouTube Video Link</label>
                 <input
                   type="url"
@@ -238,17 +235,16 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
                   onChange={(e) => updateFieldValue(index, e.target.value)}
                 />
                 {field.value && field.value !== "" && extractYouTubeID(field.value) && (
-  <iframe
-    width="320"
-    height="180"
-    src={`https://www.youtube.com/embed/${extractYouTubeID(field.value)}`}
-    title="YouTube video preview"
-    frameBorder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowFullScreen
-  ></iframe>
-)}
-
+                  <iframe
+                    width="320"
+                    height="180"
+                    src={`https://www.youtube.com/embed/${extractYouTubeID(field.value)}`}
+                    title="YouTube video preview"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                )}
               </div>
             );
           }

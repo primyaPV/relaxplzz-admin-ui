@@ -97,7 +97,7 @@ const Blog: React.FC<BlogProps> = ({ onCreateBlog, setEditBlog }) => {
   className="create-blog-button"
   onClick={() => {
     onCreateBlog();    // clears editBlog state
-    navigate('/createblog'); // navigates to CreateEditBlog page
+    navigate('/createeditblog'); // navigates to CreateEditBlog page
   }}
 >
   <i className="fas fa-plus"></i> 

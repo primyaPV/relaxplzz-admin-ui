@@ -6,10 +6,8 @@ import '../../css/blog/PreviewBlog.css';
 const PreviewBlog: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const blogData = location.state as BlogPost;
-  const fields = blogData?.fields ?? [];
-
-  let firstImageRendered = false;
+  const blogData = location.state as BlogPost; // Ensure blogData is being passed correctly
+  const fields = blogData?.fields ?? []; // Default to empty array if no fields exist
 
   const extractYouTubeID = (url: string): string => {
     const match = url.match(
@@ -19,13 +17,14 @@ const PreviewBlog: React.FC = () => {
   };
 
   const handleBackToEdit = () => {
-    navigate('/createblog', { state: blogData });
+    // Passing blogData correctly when navigating back to edit
+    navigate('/createeditblog', { state: blogData });
   };
 
   const handlePublish = () => {
-    // Placeholder for your publish logic
+    // Placeholder for publish logic
     alert('Blog published!');
-    // Optionally, send to backend or navigate to another page
+    // Optionally, send to backend or navigate to another page after publishing
   };
 
   return (
@@ -36,23 +35,6 @@ const PreviewBlog: React.FC = () => {
 
       <div className="blog-content">
         {fields.map((field, index) => {
-          if (field.type === 'image' && !firstImageRendered) {
-            firstImageRendered = true;
-            return (
-              <div key={index} className="content-image">
-                <img src={field.value} alt={`Blog content ${index}`} />
-                <div className="blog-footer">
-                  <p>
-                    <span>Published on {new Date(blogData.date).toLocaleDateString()}</span>
-                    <span style={{ marginLeft: '20px' }}>
-                      Author: <strong>{blogData.author || 'Unknown Author'}</strong>
-                    </span>
-                  </p>
-                </div>
-              </div>
-            );
-          }
-
           if (field.type === 'image') {
             return (
               <div key={index} className="content-image">
@@ -103,8 +85,12 @@ const PreviewBlog: React.FC = () => {
 
       {/* Action Buttons */}
       <div className="preview-actions" style={{ textAlign: 'center', marginTop: '40px' }}>
-        <button onClick={handlePublish} className="publish-button">Publish</button>
-        <button onClick={handleBackToEdit} className="edit-button" style={{ marginLeft: '20px' }}>Back to Edit</button>
+        <button onClick={handlePublish} className="publish-button">
+          Publish
+        </button>
+        <button onClick={handleBackToEdit} className="edit-button" style={{ marginLeft: '20px' }}>
+          Back to Edit
+        </button>
       </div>
     </div>
   );
