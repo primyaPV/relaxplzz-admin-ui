@@ -64,15 +64,15 @@ const App: React.FC = () => {
 
           {/* Create/Edit Blog Route */}
           <Route 
-            path="/createblog" 
-            element={
-              <CreateEditBlog
-                onSubmit={handleSubmitBlog}
-                onClose={() => setEditBlog(null)}
-                initialData={editBlog}
-              />
-            }
-          />
+  path="/createeditblog" 
+  element={
+    <CreateEditBlog
+      onSubmit={handleSubmitBlog}
+      onClose={() => setEditBlog(null)}
+      initialData={null} // Keep this null or remove the prop
+    />
+  }
+/>
           
           {/* Blog List Route */}
           <Route
