@@ -1,13 +1,17 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { BlogPost } from './Blog'; // Make sure to import from the correct file
+import { BlogPost } from './Blog'; // Import from Blog.tsx
 import '../../css/blog/PreviewBlog.css';
 
 const PreviewBlog: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const blogData = location.state as BlogPost; // Ensure blogData is being passed correctly
-  const fields = blogData?.fields ?? []; // Default to empty array if no fields exist
+  const blogData = location.state as BlogPost; // Get blog data from navigation state
+  
+  // Use empty array as fallback if fields don't exist
+  const fields = blogData?.fields ?? [];
+  
+  console.log("PreviewBlog received data:", blogData);
 
   const extractYouTubeID = (url: string): string => {
     const match = url.match(
@@ -17,16 +21,22 @@ const PreviewBlog: React.FC = () => {
   };
 
   const handleBackToEdit = () => {
-    // Passing blogData correctly when navigating back to edit
+    // Navigate back to edit with the current blog data
     navigate('/createeditblog', { state: blogData });
   };
 
   const handlePublish = () => {
-    // Navigate to blog page with the blog data
+    // Make sure we have a tempId to track this specific blog
+    const blogToPublish = {
+      ...blogData,
+      tempId: blogData.tempId || Date.now() // Use existing tempId or create new one
+    };
+    
+    console.log("Publishing blog with data:", blogToPublish);
+    
+    // Navigate to blog listing with the blog data in state
     navigate('/blog', { 
-      state: { 
-        newBlog: blogData 
-      } 
+      state: { newBlog: blogToPublish }
     });
   };
   

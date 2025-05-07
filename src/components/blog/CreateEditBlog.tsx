@@ -10,6 +10,7 @@ export interface BlogPost {
   date: string;
   author: string;
   status: 'active' | 'inactive';
+  tempId?: number; // Optional temporary ID for tracking
   fields: {
     type: 'image' | 'content' | 'video' | 'youtube';
     value: string;
@@ -23,28 +24,43 @@ interface BlogPostFormProps {
 }
 
 const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initialData }) => {
-  const [formData, setFormData] = useState<Omit<BlogPost, 'id'>>({
+  // Default form structure
+  const defaultForm = {
     title: '',
     date: new Date().toISOString().slice(0, 10),
     author: '',
-    status: 'active',
+    status: 'active' as 'active' | 'inactive',
     fields: [
-      { type: 'image', value: '' },
-      { type: 'content', value: '<p>Default content goes here...</p>' },
+      { type: 'image' as const, value: '' },
+      { type: 'content' as const, value: '<p>Default content goes here...</p>' },
     ],
-  });
+  };
 
+  const [formData, setFormData] = useState<Omit<BlogPost, 'id'>>(defaultForm);
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Debugging - log what's coming in
   useEffect(() => {
+    console.log("Location state:", location.state);
+    console.log("Initial data:", initialData);
+  }, [location.state, initialData]);
+
+  useEffect(() => {
+    // First try to use location state (from navigation)
     if (location.state) {
-      const { id, ...rest } = location.state as BlogPost;
+      console.log("Setting form data from location state");
+      const blogData = location.state as BlogPost;
+      // Preserve the ID but remove it from form data
+      const { id, ...rest } = blogData;
       setFormData({
         ...rest,
         date: rest.date || new Date().toISOString().slice(0, 10),
       });
-    } else if (initialData) {
+    } 
+    // Then try to use initialData (from props)
+    else if (initialData) {
+      console.log("Setting form data from initialData");
       const { id, ...rest } = initialData;
       setFormData({
         ...rest,
@@ -54,7 +70,13 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   }, [location.state, initialData]);
 
   const handleChange = (field: keyof typeof formData, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field === 'status') {
+      // Ensure status is always typed correctly
+      const statusValue = value === 'inactive' ? 'inactive' : 'active';
+      setFormData((prev) => ({ ...prev, [field]: statusValue }));
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    }
   };
 
   const addImageField = () => {
@@ -114,28 +136,38 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
-    navigate('/previewblog', { state: formData });
+  
+    // Check that all image fields have a value
+    const imageFields = formData.fields.filter((f) => f.type === 'image');
+    const allImagesUploaded = imageFields.every((f) => f.value && f.value.trim() !== '');
+  
+    if (imageFields.length > 0 && !allImagesUploaded) {
+      alert('Please upload all required images.');
+      return;
+    }
+  
+    const blogWithTempId = {
+      ...formData,
+      status: formData.status as 'active' | 'inactive',
+      tempId: Date.now(),
+    };
+  
+    onSubmit(blogWithTempId);
+    navigate('/previewblog', { state: blogWithTempId });
   };
 
   const handleReset = () => {
-    setFormData({
-      title: '',
-      date: new Date().toISOString().slice(0, 10),
-      author: '',
-      status: 'active',
-      fields: [
-        { type: 'image', value: '' },
-        { type: 'content', value: '<p>Default content goes here...</p>' },
-      ],
-    });
+    setFormData(defaultForm);
   };
 
   return (
     <div className="create-blog-page">
       <header className="create-blog-header">
-        <h1>{initialData ? 'Edit Blog Post' : 'Create Blog Post'}</h1>
-        <button className="back-button" onClick={onClose}>← Back</button>
+        <h1>{location.state || initialData ? 'Edit Blog Post' : 'Create Blog Post'}</h1>
+        <button className="back-button" onClick={() => {
+          onClose();
+          navigate('/blog');
+        }}>← Back</button>
         <div className="blog-header-actions">
           <button className="icon-button" title="Add Image" onClick={addImageField}><FaImage /></button>
           <button className="icon-button" title="Add Content" onClick={addContentField}><FaFileAlt /></button>
@@ -185,7 +217,9 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           if (field.type === 'image') {
             return (
               <div key={index}>
-                <label>Upload Image</label>
+                <label>
+  Upload Image <span style={{ color: 'red' }}>*</span>
+</label>
                 <input
                   type="file"
                   accept="image/*"

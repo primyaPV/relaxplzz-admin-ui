@@ -30,40 +30,56 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Use a ref to track if we've already processed this state
-  const processedStateRef = useRef<boolean>(false);
-  
+  const [stateProcessed, setStateProcessed] = useState(false);
+
   useEffect(() => {
-    // Only process location state once
-    if (location.state?.newBlog && !processedStateRef.current) {
-      processedStateRef.current = true;
-      
+    // Process navigation state only once per component mount
+    if (location.state?.newBlog && !stateProcessed) {
       const newBlog = location.state.newBlog as BlogPost;
       
-      // Use a unique identifier like tempId or title to check duplicates
-      const isDuplicate = blogs.some(blog => 
-        (newBlog.tempId && blog.tempId === newBlog.tempId) || 
-        (blog.title === newBlog.title && blog.author === newBlog.author)
-      );
+      // Check if this is an update to an existing blog or a new blog
+      const existingBlogIndex = blogs.findIndex(blog => blog.id === newBlog.id);
       
-      if (!isDuplicate) {
-        // Generate a new ID based on the current highest ID
-        const highestId = blogs.reduce((max, blog) => Math.max(max, blog.id), 0);
-        const newId = highestId + 1;
+      if (existingBlogIndex !== -1) {
+        // This is an update to an existing blog
+        setBlogs(prevBlogs => {
+          const updatedBlogs = [...prevBlogs];
+          updatedBlogs[existingBlogIndex] = {
+            ...newBlog,
+            status: newBlog.status as 'active' | 'inactive' // Ensure correct type
+          };
+          return updatedBlogs;
+        });
+        console.log('Updated existing blog:', newBlog.title);
+      } else {
+        // This is a new blog - check for duplicates
+        const isDuplicate = blogs.some(blog => 
+          (newBlog.tempId && blog.tempId === newBlog.tempId) ||
+          (blog.title === newBlog.title && blog.author === newBlog.author && 
+           blog.date === newBlog.date)
+        );
         
-        // Add the blog with the new ID
-        setBlogs(prevBlogs => [
-          ...prevBlogs,
-          { ...newBlog, id: newId }
-        ]);
-        
-        console.log('Added new blog:', newBlog.title);
+        if (!isDuplicate) {
+          // Generate a new ID based on the highest existing ID
+          const highestId = blogs.reduce((max, blog) => Math.max(max, blog.id), 0);
+          const blogToAdd = { 
+            ...newBlog, 
+            id: newBlog.id || highestId + 1,
+            status: newBlog.status as 'active' | 'inactive' // Ensure correct type
+          };
+          
+          setBlogs(prevBlogs => [...prevBlogs, blogToAdd]);
+          console.log('Added new blog:', blogToAdd.title);
+        } else {
+          console.log('Duplicate blog detected, not adding:', newBlog.title);
+        }
       }
       
-      // Clear navigation state
+      // Mark as processed and clear navigation state
+      setStateProcessed(true);
       window.history.replaceState({}, document.title);
     }
-  }, [location.state, blogs, setBlogs]);
+  }, [location.state, blogs, stateProcessed, setBlogs]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -86,6 +102,17 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
       setBlogs(blogs.filter((b) => b.id !== blogToDelete.id));
       setBlogToDelete(null);
     }
+  };
+  
+  const handleEdit = (blog: BlogPost) => {
+    setEditBlog(blog);
+    setOpenMenuId(null);
+    navigate('/createeditblog', { state: blog });
+  };
+  
+  const handlePreview = (blog: BlogPost) => {
+    setPreviewBlog(blog);
+    setOpenMenuId(null);
   };
 
   return (
@@ -151,9 +178,9 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
                   </button>
                   {openMenuId === blog.id && (
                     <div className="action-menu" ref={actionMenuRef}>
-                      <button onClick={() => { setEditBlog(blog); setOpenMenuId(null); navigate('/createeditblog', { state: blog }); }}>Edit</button>
-                      <button onClick={() => { handleDelete(blog); setOpenMenuId(null); }}>Delete</button>
-                      <button onClick={() => { setPreviewBlog(blog); setOpenMenuId(null); }}>Preview</button>
+                      <button onClick={() => handleEdit(blog)}>Edit</button>
+                      <button onClick={() => handleDelete(blog)}>Delete</button>
+                      <button onClick={() => handlePreview(blog)}>Preview</button>
                     </div>
                   )}
                 </td>
@@ -164,24 +191,51 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
       </div>
 
       {/* Preview inline (for quick look) */}
-      {previewBlog && previewBlog.fields.map((field, index) => {
-        if (field.type === 'image') {
-          return <img key={index} src={field.value} alt={`Blog ${index}`} style={{ width: '100%', marginBottom: '10px' }} />;
-        }
-        if (field.type === 'content') {
-          return <p key={index} dangerouslySetInnerHTML={{ __html: field.value }} />;
-        }
-        if (field.type === 'video') {
-          return (
-            <div key={index} style={{ marginBottom: '10px' }}>
-              <video width="100%" controls>
-                <source src={field.value} type="video/mp4" />
-              </video>
-            </div>
-          );
-        }
-        return null;
-      })}
+      {previewBlog && (
+        <div className="blog-preview">
+          <h2>{previewBlog.title}</h2>
+          <p className="blog-meta">By {previewBlog.author} on {previewBlog.date}</p>
+          {previewBlog.fields.map((field, index) => {
+            if (field.type === 'image') {
+              return <img key={index} src={field.value} alt={`Blog ${index}`} style={{ width: '100%', marginBottom: '10px' }} />;
+            }
+            if (field.type === 'content') {
+              return <div key={index} dangerouslySetInnerHTML={{ __html: field.value }} />;
+            }
+            if (field.type === 'video') {
+              return (
+                <div key={index} style={{ marginBottom: '10px' }}>
+                  <video width="100%" controls>
+                    <source src={field.value} type="video/mp4" />
+                  </video>
+                </div>
+              );
+            }
+            if (field.type === 'youtube') {
+              const youtubeIdMatch = field.value.match(
+                /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/
+              );
+              const youtubeId = youtubeIdMatch ? youtubeIdMatch[1] : '';
+              
+              return youtubeId ? (
+                <div key={index} style={{ marginBottom: '10px' }}>
+                  <iframe
+                    width="100%"
+                    height="315"
+                    src={`https://www.youtube.com/embed/${youtubeId}`}
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              ) : null;
+            }
+            return null;
+          })}
+          <button onClick={() => setPreviewBlog(null)}>Close Preview</button>
+        </div>
+      )}
 
       {/* Delete Modal */}
       {blogToDelete && (
