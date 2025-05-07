@@ -32,11 +32,12 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     status: 'active' as 'active' | 'inactive',
     fields: [
       { type: 'image' as const, value: '' },
-      { type: 'content' as const, value: '<p>Default content goes here...</p>' },
+      { type: 'content' as const, value: '' },
     ],
   };
 
   const [formData, setFormData] = useState<Omit<BlogPost, 'id'>>(defaultForm);
+  const [resetKey, setResetKey] = useState(Date.now());
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -89,7 +90,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   const addContentField = () => {
     setFormData((prev) => ({
       ...prev,
-      fields: [...prev.fields, { type: 'content', value: '<p>Default content goes here...</p>' }],
+      fields: [...prev.fields, { type: 'content', value: '' }],
     }));
   };
 
@@ -158,10 +159,11 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
 
   const handleReset = () => {
     setFormData(defaultForm);
+    setResetKey(Date.now()); 
   };
 
   return (
-    <div className="create-blog-page">
+    <div className="create-blog-page" key={resetKey}>
       <header className="create-blog-header">
         <h1>{location.state || initialData ? 'Edit Blog Post' : 'Create Blog Post'}</h1>
         <button className="back-button" onClick={() => {
@@ -286,7 +288,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           return null;
         })}
 
-        <div className="form-actions">
+        <div className="form-actions" >
           <button type="submit">Preview & Publish</button>
           <button type="button" onClick={handleReset}>Reset</button>
         </div>
