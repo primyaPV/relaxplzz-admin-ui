@@ -42,29 +42,28 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   const location = useLocation();
 
   // Debugging - log what's coming in
-  useEffect(() => {
-    console.log("Location state:", location.state);
-    console.log("Initial data:", initialData);
-  }, [location.state, initialData]);
+  // useEffect(() => {
+  //   console.log("Location state:", location.state);
+  //   console.log("Initial data:", initialData);
+  // }, [location.state, initialData]);
 
   useEffect(() => {
-    // First try to use location state (from navigation)
-    if (location.state) {
-      console.log("Setting form data from location state");
-      const blogData = location.state as BlogPost;
-      // Preserve the ID but remove it from form data
+    setResetKey(Date.now());
+  }, [location.state]);
+
+  useEffect(() => {
+    const blogData = (location.state as BlogPost) || initialData;
+  
+    if (blogData) {
       const { id, ...rest } = blogData;
+      const fields = Array.isArray(rest.fields) && rest.fields.length > 0
+        ? rest.fields
+        : defaultForm.fields;
+  
       setFormData({
+        ...defaultForm,  // Ensures all default keys are present
         ...rest,
-        date: rest.date || new Date().toISOString().slice(0, 10),
-      });
-    } 
-    // Then try to use initialData (from props)
-    else if (initialData) {
-      console.log("Setting form data from initialData");
-      const { id, ...rest } = initialData;
-      setFormData({
-        ...rest,
+        fields,
         date: rest.date || new Date().toISOString().slice(0, 10),
       });
     }
@@ -123,9 +122,13 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   };
 
   const updateFieldValue = (index: number, value: string) => {
-    const updatedFields = [...formData.fields];
-    updatedFields[index].value = value;
-    setFormData((prev) => ({ ...prev, fields: updatedFields }));
+    setFormData((prev) => {
+      const updatedFields = [...prev.fields];
+      if (updatedFields[index]) {
+        updatedFields[index] = { ...updatedFields[index], value };
+      }
+      return { ...prev, fields: updatedFields };
+    });
   };
 
   const extractYouTubeID = (url: string): string => {
@@ -156,7 +159,9 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     onSubmit(blogWithTempId);
     navigate('/previewblog', { state: blogWithTempId });
   };
-
+const previewPublish=()=>{
+  navigate('/previewblog');
+}
   const handleReset = () => {
     setFormData(defaultForm);
     setResetKey(Date.now()); 
@@ -203,93 +208,101 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
           required
         />
 
-        {formData.fields.map((field, index) => {
-          if (field.type === 'content') {
-            return (
-              <div key={index}>
-                <label>Content</label>
-                <CKEditorWrapper
-                  value={field.value}  // Pass the value of content
-                  onChange={(value) => updateFieldValue(index, value)}  // Update content on change
-                />
-              </div>
-            );
-          }
+{formData.fields.map((field, index) => {
+  console.log("Rendering field:", field.type, field.value);
 
-          if (field.type === 'image') {
-            return (
-              <div key={index}>
-                <label>
-  Upload Image <span style={{ color: 'red' }}>*</span>
-</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, index)}
-                />
-                {field.value && field.value !== "" && (
-                  <img
-                    src={field.value}
-                    alt={`Preview ${index + 1}`}
-                    width="200"
-                    style={{ marginTop: '10px', borderRadius: '6px' }}
-                  />
-                )}
-              </div>
-            );
-          }
+  if (field.type === 'image') {
+    return (
+      <div key={index}>
+        <label>
+          Upload Image <span style={{ color: 'red' }}>*</span>
+        </label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => handleImageUpload(e, index)}
+        />
+        {field.value && (
+          <img
+            src={field.value}
+            alt={`Preview ${index + 1}`}
+            width="200"
+            style={{ marginTop: '10px', borderRadius: '6px' }}
+          />
+        )}
+      </div>
+    );
+  }
 
-          if (field.type === 'video') {
-            return (
-              <div key={index}>
-                <br />
-                <label>Upload Video</label>
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={(e) => handleVideoUpload(e, index)}
-                />
-                {field.value && field.value !== "" && (
-                  <video width="320" height="240" controls style={{ marginTop: '10px', borderRadius: '6px' }}>
-                    <source src={field.value} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                )}
-              </div>
-            );
-          }
+  if (field.type === 'content') {
+    return (
+      <div key={index}>
+        <label>Content</label>
+        <CKEditorWrapper
+          value={field.value || ""}
+          onChange={(value) => updateFieldValue(index, value)}
+        />
+      </div>
+    );
+  }
 
-          if (field.type === 'youtube') {
-            return (
-              <div key={index}>
-                <br />
-                <label>YouTube Video Link</label>
-                <input
-                  type="url"
-                  placeholder="Enter YouTube video URL"
-                  value={field.value}
-                  onChange={(e) => updateFieldValue(index, e.target.value)}
-                />
-                {field.value && field.value !== "" && extractYouTubeID(field.value) && (
-                  <iframe
-                    width="320"
-                    height="180"
-                    src={`https://www.youtube.com/embed/${extractYouTubeID(field.value)}`}
-                    title="YouTube video preview"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
-                )}
-              </div>
-            );
-          }
+  if (field.type === 'video') {
+    return (
+      <div key={index}>
+        <label>Upload Video</label>
+        <input
+          type="file"
+          accept="video/*"
+          onChange={(e) => handleVideoUpload(e, index)}
+        />
+        {field.value && (
+          <video
+            width="320"
+            height="240"
+            controls
+            style={{ marginTop: '10px', borderRadius: '6px' }}
+          >
+            <source src={field.value} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        )}
+      </div>
+    );
+  }
 
-          return null;
-        })}
+  if (field.type === 'youtube') {
+    const youtubeID = extractYouTubeID(field.value);
+    return (
+      <div key={index}>
+        <label>YouTube Video Link</label>
+        <input
+          type="url"
+          placeholder="Enter YouTube video URL"
+          value={field.value}
+          onChange={(e) => updateFieldValue(index, e.target.value)}
+        />
+        {youtubeID && (
+          <iframe
+            width="320"
+            height="180"
+            src={`https://www.youtube.com/embed/${youtubeID}`}
+            title="YouTube video preview"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ marginTop: '10px', borderRadius: '6px' }}
+          ></iframe>
+        )}
+      </div>
+    );
+  }
+
+  return null;
+})}
+
 
         <div className="form-actions" >
-          <button type="submit">Preview & Publish</button>
+          <button type="submit" >Preview & Publish</button>
           <button type="button" onClick={handleReset}>Reset</button>
         </div>
       </form>

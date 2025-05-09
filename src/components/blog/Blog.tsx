@@ -33,7 +33,7 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
   const [stateProcessed, setStateProcessed] = useState(false);
 
   useEffect(() => {
-    // Process navigation state only once per component mount
+    console.log("blogsssssss",blogs);
     if (location.state?.newBlog && !stateProcessed) {
       const newBlog = location.state.newBlog as BlogPost;
       
@@ -105,8 +105,9 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
   };
   
   const handleEdit = (blog: BlogPost) => {
+    console.log("blog",blog)
     setEditBlog(blog);
-    setOpenMenuId(null);
+    // setOpenMenuId(null);
     navigate('/createeditblog', { state: blog });
   };
   
@@ -147,19 +148,19 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
                 <td>{blog.id}</td>
                 <td>{blog.title}</td>
                 <td>
-                  {blog.fields
-                    .filter((field) => field.type === 'image')
-                    .map((imageField, index) => (
-                      <img
-                        key={index}
-                        src={imageField.value}
-                        alt={`blog-${index}`}
-                        className="blog-image"
-                        width="100"
-                        height="60"
-                      />
-                    ))}
-                </td>
+  {(() => {
+    const firstImage = blog.fields.find((field) => field.type === 'image' && field.value);
+    return firstImage ? (
+      <img
+        src={firstImage.value}
+        alt="blog-thumbnail"
+        className="blog-image"
+        width="100"
+        height="60"
+      />
+    ) : null;
+  })()}
+</td>
                 <td>
                   <select
                     value={blog.status}
