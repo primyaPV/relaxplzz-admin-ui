@@ -141,7 +141,6 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
   
-    // Check that all image fields have a value
     const imageFields = formData.fields.filter((f) => f.type === 'image');
     const allImagesUploaded = imageFields.every((f) => f.value && f.value.trim() !== '');
   
