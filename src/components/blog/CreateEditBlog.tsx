@@ -158,9 +158,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     onSubmit(blogWithTempId);
     navigate('/previewblog', { state: blogWithTempId });
   };
-const previewPublish=()=>{
-  navigate('/previewblog');
-}
+
   const handleReset = () => {
     setFormData(defaultForm);
     setResetKey(Date.now()); 
@@ -213,6 +211,7 @@ const previewPublish=()=>{
   if (field.type === 'image') {
     return (
       <div key={index}>
+        <br></br>
         <label>
           Upload Image <span style={{ color: 'red' }}>*</span>
         </label>
@@ -221,7 +220,9 @@ const previewPublish=()=>{
           accept="image/*"
           onChange={(e) => handleImageUpload(e, index)}
         />
+        
         {field.value && (
+          
           <img
             src={field.value}
             alt={`Preview ${index + 1}`}
@@ -236,7 +237,9 @@ const previewPublish=()=>{
   if (field.type === 'content') {
     return (
       <div key={index}>
+        <br></br>
         <label>Content</label>
+        <br></br>
         <CKEditorWrapper
           value={field.value || ""}
           onChange={(value) => updateFieldValue(index, value)}
@@ -248,6 +251,7 @@ const previewPublish=()=>{
   if (field.type === 'video') {
     return (
       <div key={index}>
+        <br></br>
         <label>Upload Video</label>
         <input
           type="file"
@@ -273,7 +277,9 @@ const previewPublish=()=>{
     const youtubeID = extractYouTubeID(field.value);
     return (
       <div key={index}>
+        <br></br>
         <label>YouTube Video Link</label>
+        <br></br>
         <input
           type="url"
           placeholder="Enter YouTube video URL"
