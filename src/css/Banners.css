@@ -348,3 +348,16 @@
 .banner-action-menu button:hover {
     background-color: #f0f0f0;
 }
+
+.modal-content {
+    max-height: 90vh;
+    /* Limit the modal height */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    position: relative;
+    width: 90%;
+    max-width: 600px;
+}

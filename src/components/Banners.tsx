@@ -15,7 +15,8 @@ interface Banner {
   status: 'active' | 'inactive';
   titleColor?: string;  // Optional color for the title
   descriptionColor?: string;  // Optional color for the description
-  buttonColor?: string;  // Optional color for buttons
+  buttonColor?: string;
+  buttonTextColor?: string;  // Optional color for buttons
 }
 
 const Banners: React.FC = () => {
@@ -306,14 +307,29 @@ const Banners: React.FC = () => {
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="image">Banner Image</label>
-                <input
-                  type="file"
-                  id="image"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  required
-                />
+               <input
+                 type="file"
+                 id="image"
+                 name="image"
+                 accept="image/*"
+                 onChange={handleImageChange}
+                 required={!editBanner} // required only when creating
+                  />
+
+                  {newBanner.image && (
+                   <img
+                    src={URL.createObjectURL(newBanner.image)}
+                      alt="Banner Preview"
+                       style={{
+                       marginTop: '10px',
+                      width: '100%',
+                      maxHeight: '200px',
+                      objectFit: 'contain',
+                         borderRadius: '6px',
+                        border: '1px solid #ccc',
+                         }}
+                          />
+                         )}
               </div>
 
               <div className="form-group">
