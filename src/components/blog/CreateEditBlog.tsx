@@ -108,18 +108,25 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    if (e.target.files && e.target.files[0]) {
-      const imageUrl = URL.createObjectURL(e.target.files[0]);
-      updateFieldValue(index, imageUrl);
-    }
-  };
+  if (!window.confirm('Are you sure you want to change this image?')) return;
+
+  if (e.target.files && e.target.files[0]) {
+    const imageUrl = URL.createObjectURL(e.target.files[0]);
+    updateFieldValue(index, imageUrl);
+  }
+};
+
 
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    if (e.target.files && e.target.files[0]) {
-      const videoUrl = URL.createObjectURL(e.target.files[0]);
-      updateFieldValue(index, videoUrl);
-    }
-  };
+
+  if (e.target.files && e.target.files[0]) {
+    const videoUrl = URL.createObjectURL(e.target.files[0]);
+    updateFieldValue(index, videoUrl);
+  }
+  if (!window.confirm('Are you sure you want to change this video?')) return;
+
+};
+
 
   const updateFieldValue = (index: number, value: string) => {
     setFormData((prev) => {
@@ -249,29 +256,31 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   }
 
   if (field.type === 'video') {
-    return (
-      <div key={index}>
-        <br></br>
-        <label>Upload Video</label>
-        <input
-          type="file"
-          accept="video/*"
-          onChange={(e) => handleVideoUpload(e, index)}
-        />
-        {field.value && (
-          <video
-            width="320"
-            height="240"
-            controls
-            style={{ marginTop: '10px', borderRadius: '6px' }}
-          >
-            <source src={field.value} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        )}
-      </div>
-    );
-  }
+  return (
+    <div key={index}>
+      <br />
+      <label>Upload Video</label>
+      <input
+        type="file"
+        accept="video/*"
+        onChange={(e) => handleVideoUpload(e, index)}
+      />
+      {field.value && (
+        <video
+          key={field.value} 
+          width="320"
+          height="240"
+          controls
+          style={{ marginTop: '10px', borderRadius: '6px' }}
+        >
+          <source src={field.value} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
+    </div>
+  );
+}
+
 
   if (field.type === 'youtube') {
     const youtubeID = extractYouTubeID(field.value);
@@ -281,11 +290,17 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
         <label>YouTube Video Link</label>
         <br></br>
         <input
-          type="url"
-          placeholder="Enter YouTube video URL"
-          value={field.value}
-          onChange={(e) => updateFieldValue(index, e.target.value)}
-        />
+  type="url"
+  placeholder="Enter YouTube video URL"
+  value={field.value}
+  onChange={(e) => {
+    const newValue = e.target.value;
+    if (field.value && field.value !== newValue) {
+      if (!window.confirm('Are you sure you want to change this YouTube link?')) return;
+    }
+    updateFieldValue(index, newValue);
+  }}
+/>
         {youtubeID && (
           <iframe
             width="320"
@@ -304,7 +319,6 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
 
   return null;
 })}
-
 
         <div className="form-actions" >
           <button type="submit" >Preview & Publish</button>
