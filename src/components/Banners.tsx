@@ -319,155 +319,159 @@ const Banners: React.FC = () => {
             <h2>Create New Banner</h2>
 
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="image">Banner Image</label>
-               <input
-                 type="file"
-                 id="image"
-                 name="image"
-                 accept="image/*"
-                 onChange={handleImageChange}
-                 required={!editBanner} // required only when creating
-                  />
+              <div className="banner-form-group">
+  <label htmlFor="image">Banner Image</label>
+  <input
+    type="file"
+    id="image"
+    name="image"
+    accept="image/*"
+    onChange={handleImageChange}
+    required={!editBanner}
+    className="banner-image-input"
+  />
 
-                  {newBanner.image && (
-                   <img
-                    src={URL.createObjectURL(newBanner.image)}
-                      alt="Banner Preview"
-                       style={{
-                       marginTop: '10px',
-                      width: '80%',
-                      maxHeight: '200px',
-                      objectFit: 'contain',
-                         borderRadius: '6px',
-                        border: '1px solid #ccc',
-                         }}
-                          />
-                         )}
-                          </div>
+  {newBanner.image && (
+    <img
+      src={URL.createObjectURL(newBanner.image)}
+      alt="Banner Preview"
+      className="banner-image-preview"
+    />
+  )}
+</div>
 
-              <div className="form-group">
-                <label htmlFor="title">Title</label>
-                <input
-                  type="text"
-                  id="title"
-                  value={newBanner.title}
-                  onChange={(e) =>
-                    setNewBanner((prev) => ({ ...prev, title: e.target.value }))
-                  }
-                  required
-                />
-                <div className="form-group">
-                  <label>Title Color</label>
-                  <input
-                    type="color"
-                    value={newBanner.titleColor}
-                    onChange={(e) =>
-                      setNewBanner((prev) => ({ ...prev, titleColor: e.target.value }))
-                    }
-                  />
-                </div>
-              </div>
 
-              <div className="form-group">
-                <label htmlFor="description">Description</label>
-                <textarea
-                  id="description"
-                  value={newBanner.description}
-                  onChange={(e) =>
-                    setNewBanner((prev) => ({ ...prev, description: e.target.value }))
-                  }
-                  required
-                />
-                <div className="form-group">
-                  <label>Description Color</label>
-                  <input
-                    type="color"
-                    value={newBanner.descriptionColor}
-                    onChange={(e) =>
-                      setNewBanner((prev) => ({ ...prev, descriptionColor: e.target.value }))
-                    }
-                  />
-                </div>
-              </div>
+              <div className="banner-form-group-inline">
+  <div className="banner-form-input-column">
+    <label htmlFor="title">Title</label>
+    <input
+      type="text"
+      id="title"
+      value={newBanner.title}
+      onChange={(e) => setNewBanner((prev) => ({ ...prev, title: e.target.value }))}
+      required
+    />
+  </div>
 
-              <div className="form-group">
-                <label htmlFor="buttonCount">Buttons Count</label>
-                <select
-                  id="buttonCount"
-                  value={newBanner.buttonCount}
-                  onChange={(e) => {
-                    const count = parseInt(e.target.value);
-                    const updatedButtons = Array.from({ length: count }, (_, i) =>
-                      newBanner.buttons[i] || { name: '', link: '' }
-                    );
-                    setNewBanner((prev) => ({
-                      ...prev,
-                      buttonCount: count,
-                      buttons: updatedButtons,
-                    }));
-                  }}
-                >
-                  {[0, 1, 2].map((count) => (
-                    <option key={count} value={count}>
-                      {count}
-                    </option>
-                  ))}
-                </select>
-              </div>
+  <div className="color-picker-group">
+    <label className="color-picker-label">Color</label>
+    <input
+      type="color"
+      className="color-picker-input"
+      value={newBanner.titleColor}
+      onChange={(e) => setNewBanner((prev) => ({ ...prev, titleColor: e.target.value }))}
+    />
+  </div>
+</div>
+
+
+              <div className="banner-form-group-inline">
+  <div className="banner-form-input-column">
+    <label htmlFor="description">Description</label>
+    <textarea
+      id="description"
+      className="input-field"
+      value={newBanner.description}
+      onChange={(e) =>
+        setNewBanner((prev) => ({ ...prev, description: e.target.value }))
+      }
+      required
+    />
+  </div>
+
+  <div className="color-picker-group">
+    <label className="color-picker-label">Color</label>
+    <input
+      type="color"
+      className="color-picker-input"
+      value={newBanner.descriptionColor}
+      onChange={(e) => setNewBanner((prev) => ({ ...prev, descriptionColor: e.target.value }))}
+    />
+  </div>
+</div>
+
+              <div className="banner-form-group">
+  <label htmlFor="buttonCount">Buttons Count</label>
+  <select
+    id="buttonCount"
+    value={newBanner.buttonCount}
+    onChange={(e) => {
+      const count = parseInt(e.target.value);
+      const updatedButtons = Array.from({ length: count }, (_, i) =>
+        newBanner.buttons[i] || { name: '', link: '' }
+      );
+      setNewBanner((prev) => ({
+        ...prev,
+        buttonCount: count,
+        buttons: updatedButtons,
+      }));
+    }}
+    className="banner-button-count-select"
+  >
+    {[0, 1, 2].map((count) => (
+      <option key={count} value={count}>
+        {count}
+      </option>
+    ))}
+  </select>
+</div>
+
 
               {newBanner.buttonCount > 0 &&
                 newBanner.buttons.map((btn, index) => (
-                  <div key={index} className="form-group">
+                  <div key={index} className="banner-form-group">
                     <label>Button {index + 1}</label>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <input
-                        type="text"
-                        placeholder="Name"
-                        value={btn.name}
-                        onChange={(e) => {
-                          const updatedButtons = [...newBanner.buttons];
-                          updatedButtons[index].name = e.target.value;
-                          setNewBanner((prev) => ({ ...prev, buttons: updatedButtons }));
-                        }}
-                        required
-                        style={{ flex: 1 }}
-                      />
-                      <input
-                        type="url"
-                        placeholder="Link"
-                        value={btn.link}
-                        onChange={(e) => {
-                          const updatedButtons = [...newBanner.buttons];
-                          updatedButtons[index].link = e.target.value;
-                          setNewBanner((prev) => ({ ...prev, buttons: updatedButtons }));
-                        }}
-                        required
-                        style={{ flex: 2 }}
-                      />
-                      <div className="form-group">
-  <label>Button Background Color</label>
+                    <div className="banner-form-group-inline">
   <input
-    type="color"
-    value={newBanner.buttonColor}
-    onChange={(e) =>
-      setNewBanner((prev) => ({ ...prev, buttonColor: e.target.value }))
-    }
+    type="text"
+    placeholder="Name"
+    value={btn.name}
+    onChange={(e) => {
+      const updatedButtons = [...newBanner.buttons];
+      updatedButtons[index].name = e.target.value;
+      setNewBanner((prev) => ({ ...prev, buttons: updatedButtons }));
+    }}
+    required
+    style={{ flex: 1 }}
   />
+
+  <input
+    type="url"
+    placeholder="Link"
+    value={btn.link}
+    onChange={(e) => {
+      const updatedButtons = [...newBanner.buttons];
+      updatedButtons[index].link = e.target.value;
+      setNewBanner((prev) => ({ ...prev, buttons: updatedButtons }));
+    }}
+    required
+    style={{ flex: 2 }}
+  />
+
+  <div className="color-picker-group">
+    <label className="color-picker-label">BG</label>
+    <input
+      type="color"
+      className="color-picker-input-button-bg"
+      value={newBanner.buttonColor}
+      onChange={(e) => setNewBanner((prev) => ({ ...prev, buttonColor: e.target.value }))}
+    />
+  </div>
+
+  <div className="color-picker-group">
+    <label className="color-picker-label">Text</label>
+    <input
+      type="color"
+      className="color-picker-input-button-text"
+      value={newBanner.buttonTextColor}
+      onChange={(e) => setNewBanner((prev) => ({ ...prev, buttonTextColor: e.target.value }))}
+    />
+  </div>
 </div>
 
-<div className="form-group">
-  <label>Button Text Color</label>
-  <input
-    type="color"
-    value={newBanner.buttonTextColor}
-    onChange={(e) =>
-      setNewBanner((prev) => ({ ...prev, buttonTextColor: e.target.value }))
-    }
-  />
-</div>
 
-                    </div>
+
+                    
                   </div>
                 ))}
 

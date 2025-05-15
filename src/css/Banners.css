@@ -361,3 +361,148 @@
     width: 90%;
     max-width: 600px;
 }
+
+
+/* /////////// */
+
+
+/* For title & description input row */
+
+.banner-form-group-inline {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+
+/* Input column styling */
+
+.banner-form-input-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.banner-form-input-column input,
+.banner-form-input-column textarea {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    resize: vertical;
+}
+
+
+/* Color picker wrapper (left-aligned) */
+
+.color-picker-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.color-picker-label {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+
+/* Color picker for title/description */
+
+.color-picker-input {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+}
+
+
+/* Button section layout */
+
+.banner-form-group .banner-form-group-inline {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+
+/* Name and Link inputs in button rows */
+
+.banner-form-group-inline input[type="text"],
+.banner-form-group-inline input[type="url"] {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+
+/* Button color picker styles */
+
+.color-picker-input-button-bg,
+.color-picker-input-button-text {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+}
+
+
+/* Fix alignment for color pickers next to inputs */
+
+.banner-form-group-inline .color-picker-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* Banner Image Upload Styling */
+
+.banner-image-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 6px;
+    font-size: 14px;
+    background-color: #fafafa;
+    cursor: pointer;
+}
+
+.banner-image-preview {
+    display: block;
+    margin-top: 12px;
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+
+/* Button Count Dropdown Styling */
+
+.banner-button-count-select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 18px;
+    cursor: pointer;
+}
