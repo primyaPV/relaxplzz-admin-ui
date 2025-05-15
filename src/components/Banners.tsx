@@ -345,12 +345,15 @@ const Banners: React.FC = () => {
   <div className="banner-form-input-column">
     <label htmlFor="title">Title</label>
     <input
-      type="text"
-      id="title"
-      value={newBanner.title}
-      onChange={(e) => setNewBanner((prev) => ({ ...prev, title: e.target.value }))}
-      required
-    />
+  type="text"
+  id="title"
+  value={newBanner.title}
+  onChange={(e) =>
+    setNewBanner((prev) => ({ ...prev, title: e.target.value }))
+  }
+  required
+  style={{ color: newBanner.titleColor }}  // <-- live color
+/>
   </div>
 
   <div className="color-picker-group">
@@ -369,14 +372,15 @@ const Banners: React.FC = () => {
   <div className="banner-form-input-column">
     <label htmlFor="description">Description</label>
     <textarea
-      id="description"
-      className="input-field"
-      value={newBanner.description}
-      onChange={(e) =>
-        setNewBanner((prev) => ({ ...prev, description: e.target.value }))
-      }
-      required
-    />
+  id="description"
+  className="input-field"
+  value={newBanner.description}
+  onChange={(e) =>
+    setNewBanner((prev) => ({ ...prev, description: e.target.value }))
+  }
+  required
+  style={{ color: newBanner.descriptionColor }}  // <-- live color
+/>
   </div>
 
   <div className="color-picker-group">
@@ -423,17 +427,20 @@ const Banners: React.FC = () => {
                     <label>Button {index + 1}</label>
                     <div className="banner-form-group-inline">
   <input
-    type="text"
-    placeholder="Name"
-    value={btn.name}
-    onChange={(e) => {
-      const updatedButtons = [...newBanner.buttons];
-      updatedButtons[index].name = e.target.value;
-      setNewBanner((prev) => ({ ...prev, buttons: updatedButtons }));
-    }}
-    required
-    style={{ flex: 1 }}
-  />
+  type="text"
+  placeholder="Name"
+  value={btn.name}
+  onChange={(e) => {
+    const updatedButtons = [...newBanner.buttons];
+    updatedButtons[index].name = e.target.value;
+    setNewBanner((prev) => ({ ...prev, buttons: updatedButtons }));
+  }}
+  required
+  style={{
+    flex: 1,
+    color: newBanner.buttonTextColor, // ✅ apply selected button text color here
+  }}
+/>
 
   <input
     type="url"
