@@ -15,8 +15,8 @@ interface Banner {
   status: 'active' | 'inactive';
   titleColor?: string;  // Optional color for the title
   descriptionColor?: string;  // Optional color for the description
-  buttonColor?: string;
-  buttonTextColor?: string;  // Optional color for buttons
+  buttonColor?: string; // background color
+ buttonTextColor?: string; // text color
 }
 
 const Banners: React.FC = () => {
@@ -66,15 +66,16 @@ const Banners: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newBanner, setNewBanner] = useState({
-    image: null as File | null,
-    title: '',
-    description: '',
-    buttonCount: 0,
-    buttons: [{ name: '', link: '' }],
-    titleColor: '#000000',
-    descriptionColor: '#000000',
-    buttonColor: '#ffffff',
-  });
+  image: null as File | null,
+  title: '',
+  description: '',
+  buttonCount: 0,
+  buttons: [{ name: '', link: '' }],
+  titleColor: '#000000',
+  descriptionColor: '#000000',
+  buttonColor: '#007BFF',        // Default background color
+  buttonTextColor: '#ffffff',    // Default text color
+});
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -113,6 +114,7 @@ const Banners: React.FC = () => {
       titleColor: '#000000',
       descriptionColor: '#000000',
       buttonColor: '#ffffff',
+      buttonTextColor: '#000000',
     });
   };
 
@@ -126,6 +128,7 @@ const Banners: React.FC = () => {
       titleColor: '#000000',
       descriptionColor: '#000000',
       buttonColor: '#ffffff',
+      buttonTextColor: '#000000',
     });
   };
 
@@ -149,6 +152,7 @@ const Banners: React.FC = () => {
       titleColor: '#000000',
       descriptionColor: '#000000',
       buttonColor: '#ffffff',
+      buttonTextColor: banner.buttonTextColor || '#000000',
     });
   };
 
@@ -173,13 +177,18 @@ const Banners: React.FC = () => {
     if (editBanner) {
       // Edit existing banner
       const updatedBanner: Banner = {
-        ...editBanner,
-        image: newBanner.image ? URL.createObjectURL(newBanner.image) : editBanner.image,
-        title: newBanner.title,
-        description: newBanner.description,
-        buttonCount: newBanner.buttonCount,
-        buttons: newBanner.buttons,
-      };
+  ...editBanner,
+  image: newBanner.image ? URL.createObjectURL(newBanner.image) : editBanner.image,
+  title: newBanner.title,
+  description: newBanner.description,
+  buttonCount: newBanner.buttonCount,
+  buttons: newBanner.buttons,
+  titleColor: newBanner.titleColor,
+  descriptionColor: newBanner.descriptionColor,
+  buttonColor: newBanner.buttonColor,
+  buttonTextColor: newBanner.buttonTextColor,
+};
+
 
       setBanners((prev) =>
         prev.map((b) => (b.id === editBanner.id ? updatedBanner : b))
@@ -188,15 +197,20 @@ const Banners: React.FC = () => {
       // Create new banner
       if (newBanner.image) {
         const newBannerWithId: Banner = {
-          id: banners.length + 1,
-          image: URL.createObjectURL(newBanner.image),
-          title: newBanner.title,
-          description: newBanner.description,
-          buttonCount: newBanner.buttonCount,
-          buttons: newBanner.buttons,
-          order: 1,
-          status: 'active',
-        };
+  id: banners.length + 1,
+  image: URL.createObjectURL(newBanner.image),
+  title: newBanner.title,
+  description: newBanner.description,
+  buttonCount: newBanner.buttonCount,
+  buttons: newBanner.buttons,
+  order: 1,
+  status: 'active',
+  titleColor: newBanner.titleColor,
+  descriptionColor: newBanner.descriptionColor,
+  buttonColor: newBanner.buttonColor,
+  buttonTextColor: newBanner.buttonTextColor,
+};
+
         setBanners((prevBanners) => [...prevBanners, newBannerWithId]);
       }
     }
@@ -322,7 +336,7 @@ const Banners: React.FC = () => {
                       alt="Banner Preview"
                        style={{
                        marginTop: '10px',
-                      width: '100%',
+                      width: '80%',
                       maxHeight: '200px',
                       objectFit: 'contain',
                          borderRadius: '6px',
@@ -330,7 +344,7 @@ const Banners: React.FC = () => {
                          }}
                           />
                          )}
-              </div>
+                          </div>
 
               <div className="form-group">
                 <label htmlFor="title">Title</label>
@@ -377,7 +391,6 @@ const Banners: React.FC = () => {
                 </div>
               </div>
 
-              {/* Buttons Count Dropdown */}
               <div className="form-group">
                 <label htmlFor="buttonCount">Buttons Count</label>
                 <select
@@ -433,15 +446,27 @@ const Banners: React.FC = () => {
                         style={{ flex: 2 }}
                       />
                       <div className="form-group">
-                        <label>Button Text Color</label>
-                        <input
-                          type="color"
-                          value={newBanner.buttonColor}
-                          onChange={(e) =>
-                            setNewBanner((prev) => ({ ...prev, buttonColor: e.target.value }))
-                          }
-                        />
-                      </div>
+  <label>Button Background Color</label>
+  <input
+    type="color"
+    value={newBanner.buttonColor}
+    onChange={(e) =>
+      setNewBanner((prev) => ({ ...prev, buttonColor: e.target.value }))
+    }
+  />
+</div>
+
+<div className="form-group">
+  <label>Button Text Color</label>
+  <input
+    type="color"
+    value={newBanner.buttonTextColor}
+    onChange={(e) =>
+      setNewBanner((prev) => ({ ...prev, buttonTextColor: e.target.value }))
+    }
+  />
+</div>
+
                     </div>
                   </div>
                 ))}
@@ -478,22 +503,23 @@ const Banners: React.FC = () => {
 </p>
 {previewBanner?.buttons?.map((btn, index) => (
   <a
-    key={index}
-    href={btn.link}
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{
-      display: 'inline-block',
-      padding: '8px 16px',
-      margin: '5px',
-      background: '#007BFF',
-      color: previewBanner?.buttonColor || '#fff',
-      textDecoration: 'none',
-      borderRadius: '4px',
-    }}
-  >
-    {btn.name}
-  </a>
+  key={index}
+  href={btn.link}
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{
+    display: 'inline-block',
+    padding: '8px 16px',
+    margin: '5px',
+    background: previewBanner?.buttonColor || '#007BFF',
+    color: previewBanner?.buttonTextColor || '#fff',
+    textDecoration: 'none',
+    borderRadius: '4px',
+  }}
+>
+  {btn.name}
+</a>
+
 ))}
           </div>
         </div>
