@@ -23,6 +23,8 @@ const Banners: React.FC = () => {
   const [bannerToDelete, setBannerToDelete] = useState<Banner | null>(null);
   const [previewBanner, setPreviewBanner] = useState<Banner | null>(null);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+
   const [banners, setBanners] = useState<Banner[]>([
     {
       id: 1,
@@ -68,7 +70,7 @@ const Banners: React.FC = () => {
   title: '',
   description: '',
   buttonCount: 0,
-  buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#ffffff' }],
+  buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#000000' }],
   titleColor: '#000000',
   descriptionColor: '#000000',
 });
@@ -106,7 +108,7 @@ const Banners: React.FC = () => {
       title: '',
       description: '',
       buttonCount: 0,
-      buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#ffffff' }],
+      buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#000000' }],
       titleColor: '#000000',
       descriptionColor: '#000000',
     });
@@ -118,7 +120,7 @@ const Banners: React.FC = () => {
       title: '',
       description: '',
       buttonCount: 0,
-      buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#ffffff' }],
+      buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#000000' }],
       titleColor: '#000000',
       descriptionColor: '#000000',
     });
@@ -143,7 +145,7 @@ const Banners: React.FC = () => {
   buttons: banner.buttons.map((btn) => ({
     ...btn,
     color: btn.color || '#007BFF',
-    textColor: btn.textColor || '#ffffff',
+    textColor: btn.textColor || '#000000',
   })),
   titleColor: banner.titleColor || '#000000',
   descriptionColor: banner.descriptionColor || '#000000',
@@ -207,6 +209,7 @@ const Banners: React.FC = () => {
     }
 
     handleCloseModal();
+    setShowPreview(false);
   };
 
   return (
@@ -287,7 +290,7 @@ const Banners: React.FC = () => {
                     <div className="banner-action-menu" ref={actionMenuRef}>
                       <button onClick={() => { handleEdit(banner); setOpenMenuId(null); }}>Edit</button>
                       <button onClick={() => { handleDelete(banner); setOpenMenuId(null); }}>Delete</button>
-                      <button onClick={() => { setPreviewBanner(banner); setOpenMenuId(null); }}>Preview</button>
+                      <button onClick={() => { setPreviewBanner(banner);setShowPreview(true); setOpenMenuId(null); }}>Preview</button>
                     </div>
                   )}
                 </td>
@@ -464,7 +467,7 @@ const Banners: React.FC = () => {
     <input
   type="color"
   className="color-picker-input-button-text"
-  value={btn.textColor || '#ffffff'}
+  value={btn.textColor || '#000000'}
   onChange={(e) => {
     const updatedButtons = [...newBanner.buttons];
     updatedButtons[index].textColor = e.target.value;
@@ -474,66 +477,104 @@ const Banners: React.FC = () => {
   </div>
 </div>
 
-
-
-                    
                   </div>
                 ))}
 
               <div className="form-actions">
-                <button type="submit">Add Banner</button>
-                <button type="button" onClick={handleRestore}>
-                  Restore
-                </button>
-              </div>
+  <button
+    type="button"
+    onClick={() => setShowPreview(true)}
+  >
+    Preview Banner
+  </button>
+  
+  <button type="button" onClick={handleRestore}>
+    Restore
+  </button>
+</div>
             </form>
+            
           </div>
         </div>
       )}
 
       {/* Preview Banner Modal */}
-      {previewBanner && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <button className="close-modal-button" onClick={() => setPreviewBanner(null)}>
-              ×
-            </button>
-            <h2>Banner Preview</h2>
-            <img
-              src={previewBanner.image}
-              alt="Preview"
-              style={{ width: '100%', height: 'auto', marginBottom: '20px' }}
-            />
-            <h3 style={{ color: previewBanner?.titleColor || '#000' }}>
-  {previewBanner?.title}
-</h3>
-<p style={{ color: previewBanner?.descriptionColor || '#000' }}>
-  {previewBanner?.description}
-</p>
-{previewBanner?.buttons?.map((btn, index) => (
-  <a
-  key={index}
-  href={btn.link}
-  target="_blank"
-  rel="noopener noreferrer"
-  style={{
-    display: 'inline-block',
-    padding: '8px 16px',
-    margin: '5px',
-    background: btn.color || '#007BFF',
-    color: btn.textColor || '#fff',
-    textDecoration: 'none',
-    borderRadius: '4px',
-  }}
->
-  {btn.name}
-</a>
+     {showPreview && (previewBanner || newBanner) && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <button
+        className="close-modal-button"
+        onClick={() => {
+          setShowPreview(false);
+          setPreviewBanner(null);
+        }}
+      >
+        &times;
+      </button>
+
+      <h2>Banner Preview</h2>
+
+      {(() => {
+        const banner = previewBanner || newBanner;
+
+        return (
+          <>
+            {banner.image && (
+              <img
+                src={
+                  typeof banner.image === 'string'
+                    ? banner.image
+                    : URL.createObjectURL(banner.image)
+                }
+                alt="Banner Preview"
+                style={{
+                  width: '100%',
+                  maxHeight: '200px',
+                  objectFit: 'cover',
+                  marginBottom: '20px',
+                  borderRadius: '8px',
+                }}
+              />
+            )}
+
+            <h3 style={{ color: banner.titleColor || '#000' }}>
+              {banner.title}
+            </h3>
+
+            <p style={{ color: banner.descriptionColor || '#333' }}>
+              {banner.description}
+            </p>
+
+            <div style={{ marginTop: '10px' }}>
+              {banner.buttons?.map((btn, index) => (
+                <a
+                  key={index}
+                  href={btn.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block',
+                    padding: '10px 16px',
+                    margin: '8px 4px 0 0',
+                    backgroundColor: btn.color || '#007bff',
+                    color: btn.textColor || '#fff',
+                    borderRadius: '4px',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                  }}
+                >
+                  {btn.name}
+                </a>
+              ))}
+            </div>
+          </>
+        );
+      })()}
+    </div>
+  </div>
+)}
 
 
-))}
-          </div>
-        </div>
-      )}
 
       {/* Delete Banner Confirmation Modal */}
       {bannerToDelete && (
