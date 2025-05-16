@@ -10,13 +10,11 @@ interface Banner {
   title: string;
   description: string;
   buttonCount: number;
-  buttons: { name: string; link: string }[];
+  buttons: { name: string; link: string; color?: string; textColor?: string }[];
   order: number;
   status: 'active' | 'inactive';
-  titleColor?: string;  // Optional color for the title
-  descriptionColor?: string;  // Optional color for the description
-  buttonColor?: string; // background color
- buttonTextColor?: string; // text color
+  titleColor?: string;  
+  descriptionColor?: string;
 }
 
 const Banners: React.FC = () => {
@@ -70,11 +68,9 @@ const Banners: React.FC = () => {
   title: '',
   description: '',
   buttonCount: 0,
-  buttons: [{ name: '', link: '' }],
+  buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#ffffff' }],
   titleColor: '#000000',
   descriptionColor: '#000000',
-  buttonColor: '#007BFF',        // Default background color
-  buttonTextColor: '#ffffff',    // Default text color
 });
 
   useEffect(() => {
@@ -110,11 +106,9 @@ const Banners: React.FC = () => {
       title: '',
       description: '',
       buttonCount: 0,
-      buttons: [{ name: '', link: '' }],
+      buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#ffffff' }],
       titleColor: '#000000',
       descriptionColor: '#000000',
-      buttonColor: '#ffffff',
-      buttonTextColor: '#000000',
     });
   };
 
@@ -124,11 +118,9 @@ const Banners: React.FC = () => {
       title: '',
       description: '',
       buttonCount: 0,
-      buttons: [{ name: '', link: '' }],
+      buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#ffffff' }],
       titleColor: '#000000',
       descriptionColor: '#000000',
-      buttonColor: '#ffffff',
-      buttonTextColor: '#000000',
     });
   };
 
@@ -144,16 +136,19 @@ const Banners: React.FC = () => {
     setEditBanner(banner);
     setIsModalOpen(true);
     setNewBanner({
-      image: null,
-      title: banner.title,
-      description: banner.description,
-      buttonCount: banner.buttonCount,
-      buttons: [...banner.buttons],
-      titleColor: '#000000',
-      descriptionColor: '#000000',
-      buttonColor: '#ffffff',
-      buttonTextColor: banner.buttonTextColor || '#000000',
-    });
+  image: null,
+  title: banner.title,
+  description: banner.description,
+  buttonCount: banner.buttonCount,
+  buttons: banner.buttons.map((btn) => ({
+    ...btn,
+    color: btn.color || '#007BFF',
+    textColor: btn.textColor || '#ffffff',
+  })),
+  titleColor: banner.titleColor || '#000000',
+  descriptionColor: banner.descriptionColor || '#000000',
+});
+
   };
 
   const handleDelete = (banner: Banner) => {
@@ -185,8 +180,6 @@ const Banners: React.FC = () => {
   buttons: newBanner.buttons,
   titleColor: newBanner.titleColor,
   descriptionColor: newBanner.descriptionColor,
-  buttonColor: newBanner.buttonColor,
-  buttonTextColor: newBanner.buttonTextColor,
 };
 
 
@@ -207,8 +200,6 @@ const Banners: React.FC = () => {
   status: 'active',
   titleColor: newBanner.titleColor,
   descriptionColor: newBanner.descriptionColor,
-  buttonColor: newBanner.buttonColor,
-  buttonTextColor: newBanner.buttonTextColor,
 };
 
         setBanners((prevBanners) => [...prevBanners, newBannerWithId]);
@@ -419,8 +410,6 @@ const Banners: React.FC = () => {
     ))}
   </select>
 </div>
-
-
               {newBanner.buttonCount > 0 &&
                 newBanner.buttons.map((btn, index) => (
                   <div key={index} className="banner-form-group">
@@ -438,7 +427,8 @@ const Banners: React.FC = () => {
   required
   style={{
     flex: 1,
-    color: newBanner.buttonTextColor, // ✅ apply selected button text color here
+   color: btn.textColor || '#000000',
+
   }}
 />
 
@@ -458,21 +448,29 @@ const Banners: React.FC = () => {
   <div className="color-picker-group">
     <label className="color-picker-label">BG</label>
     <input
-      type="color"
-      className="color-picker-input-button-bg"
-      value={newBanner.buttonColor}
-      onChange={(e) => setNewBanner((prev) => ({ ...prev, buttonColor: e.target.value }))}
-    />
+  type="color"
+  className="color-picker-input-button-bg"
+  value={btn.color || '#007BFF'}
+  onChange={(e) => {
+    const updatedButtons = [...newBanner.buttons];
+    updatedButtons[index].color = e.target.value;
+    setNewBanner((prev) => ({ ...prev, buttons: updatedButtons }));
+  }}
+/>
   </div>
 
   <div className="color-picker-group">
     <label className="color-picker-label">Text</label>
     <input
-      type="color"
-      className="color-picker-input-button-text"
-      value={newBanner.buttonTextColor}
-      onChange={(e) => setNewBanner((prev) => ({ ...prev, buttonTextColor: e.target.value }))}
-    />
+  type="color"
+  className="color-picker-input-button-text"
+  value={btn.textColor || '#ffffff'}
+  onChange={(e) => {
+    const updatedButtons = [...newBanner.buttons];
+    updatedButtons[index].textColor = e.target.value;
+    setNewBanner((prev) => ({ ...prev, buttons: updatedButtons }));
+  }}
+/>
   </div>
 </div>
 
@@ -522,14 +520,15 @@ const Banners: React.FC = () => {
     display: 'inline-block',
     padding: '8px 16px',
     margin: '5px',
-    background: previewBanner?.buttonColor || '#007BFF',
-    color: previewBanner?.buttonTextColor || '#fff',
+    background: btn.color || '#007BFF',
+    color: btn.textColor || '#fff',
     textDecoration: 'none',
     borderRadius: '4px',
   }}
 >
   {btn.name}
 </a>
+
 
 ))}
           </div>
