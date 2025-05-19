@@ -10,6 +10,7 @@ export interface BlogPost {
   date: string;
   author: string;
   status: 'active' | 'inactive';
+  scheduledPublishTime: string;  // New field for scheduling publish time
   tempId?: number; // Optional temporary ID for tracking
   fields: {
     type: 'image' | 'content' | 'video' | 'youtube';
@@ -30,6 +31,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     date: new Date().toISOString().slice(0, 10),
     author: '',
     status: 'active' as 'active' | 'inactive',
+    scheduledPublishTime: '',
     fields: [
       { type: 'image' as const, value: '' },
       { type: 'content' as const, value: '' },
@@ -106,6 +108,14 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
       fields: [...prev.fields, { type: 'youtube', value: '' }],
     }));
   };
+  
+  const handleScheduledPublishChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  setFormData((prev) => ({
+    ...prev,
+    scheduledPublishTime: e.target.value,
+  }));
+};
+
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
   if (e.target.files && e.target.files[0]) {
@@ -326,6 +336,15 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
 
   return null;
 })}
+
+{/* //////////////////////////////////// */}
+<label>Scheduled Publish Time</label>
+        <input
+          type="datetime-local"
+          value={formData.scheduledPublishTime}
+          onChange={handleScheduledPublishChange}
+        />
+        {/* ////////////////////////////////////// */}
 
         <div className="form-actions" >
           <button type="submit" >Preview & Publish</button>

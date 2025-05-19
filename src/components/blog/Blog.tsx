@@ -8,7 +8,8 @@ export interface BlogPost {
   date: string;
   author: string;
   status: 'active' | 'inactive';
-  tempId?: number; // Optional temporary ID for tracking
+  tempId?: number; 
+  scheduledPublishTime: string;// Optional temporary ID for tracking
   fields: {
     type: 'image' | 'content' | 'video' | 'youtube';
     value: string;
