@@ -529,54 +529,38 @@ const Banners: React.FC = () => {
 
         return (
           <>
-            {banner.image && (
-              <img
-                src={
-                  typeof banner.image === 'string'
-                    ? banner.image
-                    : URL.createObjectURL(banner.image)
-                }
-                alt="Banner Preview"
-                style={{
-                  width: '100%',
-                  maxHeight: '200px',
-                  objectFit: 'cover',
-                  marginBottom: '20px',
-                  borderRadius: '8px',
-                }}
-              />
-            )}
+            <div
+  className="banner-preview"
+  style={{
+    backgroundImage: banner.image
+      ? `url(${typeof banner.image === 'string'
+          ? banner.image
+          : URL.createObjectURL(banner.image)})`
+      : 'none',
+  }}
+>
+  <div className="banner-preview-content">
+    <h3 style={{ color: banner.titleColor || '#fff' }}>{banner.title}</h3>
+    <p style={{ color: banner.descriptionColor || '#fff' }}>{banner.description}</p>
+    <div className="banner-preview-buttons">
+      {banner.buttons?.map((btn, index) => (
+        <a
+          key={index}
+          href={btn.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            backgroundColor: btn.color || '#007bff',
+            color: btn.textColor || '#fff',
+          }}
+        >
+          {btn.name}
+        </a>
+      ))}
+    </div>
+  </div>
+</div>
 
-            <h3 style={{ color: banner.titleColor || '#000' }}>
-              {banner.title}
-            </h3>
-
-            <p style={{ color: banner.descriptionColor || '#333' }}>
-              {banner.description}
-            </p>
-
-            <div style={{ marginTop: '10px' }}>
-              {banner.buttons?.map((btn, index) => (
-                <a
-                  key={index}
-                  href={btn.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-block',
-                    padding: '10px 16px',
-                    margin: '8px 4px 0 0',
-                    backgroundColor: btn.color || '#007bff',
-                    color: btn.textColor || '#fff',
-                    borderRadius: '4px',
-                    textDecoration: 'none',
-                    fontSize: '14px',
-                  }}
-                >
-                  {btn.name}
-                </a>
-              ))}
-            </div>
           </>
         );
       })()}
