@@ -168,49 +168,49 @@ const Banners: React.FC = () => {
     setBannerToDelete(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent) => {
+  if (e) e.preventDefault();
 
-    if (editBanner) {
-      // Edit existing banner
-      const updatedBanner: Banner = {
-  ...editBanner,
-  image: newBanner.image ? URL.createObjectURL(newBanner.image) : editBanner.image,
-  title: newBanner.title,
-  description: newBanner.description,
-  buttonCount: newBanner.buttonCount,
-  buttons: newBanner.buttons,
-  titleColor: newBanner.titleColor,
-  descriptionColor: newBanner.descriptionColor,
-};
+  if (editBanner) {
+    // Editing existing banner
+    const updatedBanner: Banner = {
+      ...editBanner,
+      image: newBanner.image ? URL.createObjectURL(newBanner.image) : editBanner.image,
+      title: newBanner.title,
+      description: newBanner.description,
+      buttonCount: newBanner.buttonCount,
+      buttons: newBanner.buttons,
+      titleColor: newBanner.titleColor,
+      descriptionColor: newBanner.descriptionColor,
+    };
 
+    setBanners((prev) =>
+      prev.map((b) => (b.id === editBanner.id ? updatedBanner : b))
+    );
+  } else {
+    // Creating a new banner
+    if (newBanner.image) {
+      const newBannerWithId: Banner = {
+        id: banners.length + 1,
+        image: URL.createObjectURL(newBanner.image),
+        title: newBanner.title,
+        description: newBanner.description,
+        buttonCount: newBanner.buttonCount,
+        buttons: newBanner.buttons,
+        order: banners.length + 1,
+        status: 'active',
+        titleColor: newBanner.titleColor,
+        descriptionColor: newBanner.descriptionColor,
+      };
 
-      setBanners((prev) =>
-        prev.map((b) => (b.id === editBanner.id ? updatedBanner : b))
-      );
-    } else {
-      // Create new banner
-      if (newBanner.image) {
-        const newBannerWithId: Banner = {
-  id: banners.length + 1,
-  image: URL.createObjectURL(newBanner.image),
-  title: newBanner.title,
-  description: newBanner.description,
-  buttonCount: newBanner.buttonCount,
-  buttons: newBanner.buttons,
-  order: 1,
-  status: 'active',
-  titleColor: newBanner.titleColor,
-  descriptionColor: newBanner.descriptionColor,
-};
-
-        setBanners((prevBanners) => [...prevBanners, newBannerWithId]);
-      }
+      setBanners((prevBanners) => [...prevBanners, newBannerWithId]);
     }
+  }
 
-    handleCloseModal();
-    setShowPreview(false);
-  };
+  handleCloseModal();
+  setShowPreview(false);
+};
+
 
   return (
     <div className="banners-page">
@@ -310,7 +310,7 @@ const Banners: React.FC = () => {
             >
               ×
             </button>
-            <h2>Create New Banner</h2>
+            <h2>{editBanner ? 'Edit Banner' : 'Create New Banner'}</h2>
 
             <form onSubmit={handleSubmit}>
               <div className="banner-form-group">
@@ -325,13 +325,20 @@ const Banners: React.FC = () => {
     className="banner-image-input"
   />
 
-  {newBanner.image && (
-    <img
-      src={URL.createObjectURL(newBanner.image)}
-      alt="Banner Preview"
-      className="banner-image-preview"
-    />
-  )}
+  {(newBanner.image || editBanner?.image) && (
+  <img
+    src={
+      newBanner.image
+        ? URL.createObjectURL(newBanner.image)
+        : typeof editBanner?.image === 'string'
+        ? editBanner.image
+        : ''
+    }
+    alt="Banner Preview"
+    className="banner-image-preview"
+  />
+)}
+
 </div>
 
 
@@ -487,7 +494,10 @@ const Banners: React.FC = () => {
   >
     Preview Banner
   </button>
-  
+  <button type="button" onClick={handleSubmit}>
+  {editBanner ? 'Update Banner' : 'Add Banner'}
+</button>
+
   <button type="button" onClick={handleRestore}>
     Restore
   </button>
