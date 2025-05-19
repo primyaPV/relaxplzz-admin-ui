@@ -108,9 +108,13 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-  if (!window.confirm('Are you sure you want to change this image?')) return;
-
   if (e.target.files && e.target.files[0]) {
+    // Only ask for confirmation if replacing an existing image
+    if (formData.fields[index].value) {
+      const confirmed = window.confirm('Are you sure you want to change this image?');
+      if (!confirmed) return;
+    }
+
     const imageUrl = URL.createObjectURL(e.target.files[0]);
     updateFieldValue(index, imageUrl);
   }
@@ -123,7 +127,10 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     const videoUrl = URL.createObjectURL(e.target.files[0]);
     updateFieldValue(index, videoUrl);
   }
-  if (!window.confirm('Are you sure you want to change this video?')) return;
+ if (formData.fields[index].value) {
+      const confirmed = window.confirm('Are you sure you want to change this video?');
+      if (!confirmed) return;
+    }
 
 };
 
