@@ -24,6 +24,8 @@ const Banners: React.FC = () => {
   const [previewBanner, setPreviewBanner] = useState<Banner | null>(null);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+
 
   const [banners, setBanners] = useState<Banner[]>([
     {
@@ -94,6 +96,22 @@ const Banners: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+  if (newBanner.image) {
+    const objectUrl = URL.createObjectURL(newBanner.image);
+    setPreviewImageUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  } else if (editBanner?.image && typeof editBanner.image === 'string') {
+    setPreviewImageUrl(editBanner.image);
+  } else {
+    setPreviewImageUrl(null);
+  }
+}, [newBanner.image, editBanner]);
+
 
   // Open the modal to create a new banner
   const handleCreateBanner = () => {
@@ -290,7 +308,16 @@ const Banners: React.FC = () => {
                     <div className="banner-action-menu" ref={actionMenuRef}>
                       <button onClick={() => { handleEdit(banner); setOpenMenuId(null); }}>Edit</button>
                       <button onClick={() => { handleDelete(banner); setOpenMenuId(null); }}>Delete</button>
-                      <button onClick={() => { setPreviewBanner(banner);setShowPreview(true); setOpenMenuId(null); }}>Preview</button>
+                      <button
+  onClick={() => {
+    setPreviewBanner(banner);
+    setPreviewImageUrl(typeof banner.image === 'string' ? banner.image : '');
+    setShowPreview(true);
+    setOpenMenuId(null);
+  }}
+>
+  Preview
+</button>
                     </div>
                   )}
                 </td>
@@ -324,25 +351,19 @@ const Banners: React.FC = () => {
     required={!editBanner}
     className="banner-image-input"
   />
-
-  {(newBanner.image || editBanner?.image) && (
+{/* //////////////////////////// */}
+ {previewImageUrl && (
   <img
-    src={
-      newBanner.image
-        ? URL.createObjectURL(newBanner.image)
-        : typeof editBanner?.image === 'string'
-        ? editBanner.image
-        : ''
-    }
+    src={previewImageUrl}
     alt="Banner Preview"
     className="banner-image-preview"
   />
 )}
-
+{/* //////////////////////////// */}
 </div>
 
 
-              <div className="banner-form-group-inline">
+  <div className="banner-form-group-inline">
   <div className="banner-form-input-column">
     <label htmlFor="title">Title</label>
     <input
@@ -353,7 +374,7 @@ const Banners: React.FC = () => {
     setNewBanner((prev) => ({ ...prev, title: e.target.value }))
   }
   required
-  style={{ color: newBanner.titleColor }}  // <-- live color
+  style={{ color: newBanner.titleColor }}
 />
   </div>
 
@@ -369,7 +390,7 @@ const Banners: React.FC = () => {
 </div>
 
 
-              <div className="banner-form-group-inline">
+  <div className="banner-form-group-inline">
   <div className="banner-form-input-column">
     <label htmlFor="description">Description</label>
     <textarea
@@ -395,7 +416,7 @@ const Banners: React.FC = () => {
   </div>
 </div>
 
-              <div className="banner-form-group">
+  <div className="banner-form-group">
   <label htmlFor="buttonCount">Buttons Count</label>
   <select
     id="buttonCount"
@@ -501,7 +522,7 @@ const Banners: React.FC = () => {
     Restore
   </button>
 </div>
-            </form>
+  </form>
             
           </div>
         </div>
@@ -531,11 +552,8 @@ const Banners: React.FC = () => {
             <div
   className="banner-preview"
   style={{
-    backgroundImage: banner.image
-      ? `url(${typeof banner.image === 'string'
-          ? banner.image
-          : URL.createObjectURL(banner.image)})`
-      : 'none',
+    backgroundImage: previewImageUrl ? `url(${previewImageUrl})` : 'none',
+
   }}
 >
   <div className="banner-preview-content">
@@ -559,7 +577,6 @@ const Banners: React.FC = () => {
     </div>
   </div>
 </div>
-
           </>
         );
       })()}
