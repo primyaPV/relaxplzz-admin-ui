@@ -351,7 +351,6 @@ const Banners: React.FC = () => {
     required={!editBanner}
     className="banner-image-input"
   />
-{/* //////////////////////////// */}
  {previewImageUrl && (
   <img
     src={previewImageUrl}
@@ -359,7 +358,6 @@ const Banners: React.FC = () => {
     className="banner-image-preview"
   />
 )}
-{/* //////////////////////////// */}
 </div>
 
 
