@@ -62,7 +62,6 @@ const App: React.FC = () => {
             }
           />
 
-          {/* Create/Edit Blog Page */}
           <Route
             path="/createeditblog"
             element={
@@ -74,7 +73,6 @@ const App: React.FC = () => {
             }
           />
 
-          {/* Blog Listing Page */}
           <Route
             path="/blog"
             element={
@@ -87,8 +85,8 @@ const App: React.FC = () => {
             }
           />
 
-          {/* Default Route */}
-          <Route path="*" element={<Navigate to="/blog" />} />
+          
+          <Route path="*" element={<Navigate to="/banners" />} />
         </Routes>
       </div>
     </Router>

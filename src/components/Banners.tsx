@@ -380,7 +380,7 @@ const Banners: React.FC = () => {
     setNewBanner((prev) => ({ ...prev, description: e.target.value }))
   }
   required
-  style={{ color: newBanner.descriptionColor }}  // <-- live color
+  style={{ color: newBanner.descriptionColor }}  
 />
   </div>
 
@@ -483,11 +483,10 @@ const Banners: React.FC = () => {
 />
   </div>
 </div>
+</div>
+ ))}
 
-                  </div>
-                ))}
-
-              <div className="form-actions">
+  <div className="form-actions">
   <button
     type="button"
     onClick={() => setShowPreview(true)}
