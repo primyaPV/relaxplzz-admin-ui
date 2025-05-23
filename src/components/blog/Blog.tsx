@@ -28,6 +28,8 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
   const [previewBlog, setPreviewBlog] = useState<BlogPost | null>(null);
   const [blogToDelete, setBlogToDelete] = useState<BlogPost | null>(null);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [filterType, setFilterType] = useState<'all' | 'published' | 'scheduled'>('all');
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -91,6 +93,27 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+  // //////////////////////////////////////
+  const filteredBlogs = blogs.filter(blog => {
+  const now = new Date();
+  const scheduledTime = blog.scheduledPublishTime ? new Date(blog.scheduledPublishTime) : null;
+  const isScheduled = scheduledTime && scheduledTime > now;
+
+  if (filterType === 'published') {
+    // Show only published blogs: active and not scheduled
+    return blog.status === 'active' && !isScheduled;
+  }
+
+  if (filterType === 'scheduled') {
+    // Show only scheduled blogs
+    return isScheduled;
+  }
+
+  // Show all blogs
+  return true;
+});
+
+
 
   const handleStatusChange = (id: number, newStatus: 'active' | 'inactive') => {
     setBlogs(blogs.map(blog => blog.id === id ? { ...blog, status: newStatus } : blog));
@@ -130,7 +153,28 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
           <i className="fas fa-plus"></i>
         </button>
       </header>
-
+      {/* //////////////////////////////////////////////////// */}
+      <div className="blog-filters">
+  <button
+    className={filterType === 'published' ? 'active' : ''}
+    onClick={() => setFilterType('published')}
+  >
+    Published Blogs
+  </button>
+  <button
+    className={filterType === 'scheduled' ? 'active' : ''}
+    onClick={() => setFilterType('scheduled')}
+  >
+    Scheduled Blogs
+  </button>
+  <button
+    className={filterType === 'all' ? 'active' : ''}
+    onClick={() => setFilterType('all')}
+  >
+    All Blogs
+  </button>
+</div>
+{/* ////////////////////////////////////////////////////// */}
       <div className="blog-table-container">
         <table className="blog-table">
           <thead>
@@ -139,11 +183,15 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
               <th>Title</th>
               <th>Image</th>
               <th>Status</th>
+              
+  <th>
+  {filterType === 'scheduled' ? 'Scheduled Time' : 'Type'}
+</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {blogs.map((blog) => (
+            {filteredBlogs.map((blog) => (
               <tr key={blog.id}>
                 <td>{blog.id}</td>
                 <td>{blog.title}</td>
@@ -170,6 +218,15 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
                     <option value="inactive">Inactive</option>
                   </select>
                 </td>
+                <td>
+  {filterType === 'scheduled'
+    ? new Date(blog.scheduledPublishTime).toLocaleString()
+    : filterType === 'published'
+      ? 'Published'
+      : blog.scheduledPublishTime && new Date(blog.scheduledPublishTime) > new Date()
+        ? 'Scheduled'
+        : 'Published'}
+</td>
                 <td className="action-cell">
                   <button
                     className="menu-button"
