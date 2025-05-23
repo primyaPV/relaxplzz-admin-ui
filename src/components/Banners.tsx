@@ -75,6 +75,7 @@ const Banners: React.FC = () => {
   buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#000000' }],
   titleColor: '#000000',
   descriptionColor: '#000000',
+   status: 'inactive' as 'active' | 'inactive',
 });
 
   useEffect(() => {
@@ -129,6 +130,7 @@ const Banners: React.FC = () => {
       buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#000000' }],
       titleColor: '#000000',
       descriptionColor: '#000000',
+       status: 'inactive' as 'active' | 'inactive',
     });
   };
 
@@ -141,6 +143,7 @@ const Banners: React.FC = () => {
       buttons: [{ name: '', link: '', color: '#007BFF', textColor: '#000000' }],
       titleColor: '#000000',
       descriptionColor: '#000000',
+       status: 'inactive' as 'active' | 'inactive',
     });
   };
 
@@ -167,6 +170,7 @@ const Banners: React.FC = () => {
   })),
   titleColor: banner.titleColor || '#000000',
   descriptionColor: banner.descriptionColor || '#000000',
+  status: 'inactive',
 });
 
   };
@@ -290,7 +294,13 @@ const Banners: React.FC = () => {
                   </select>
                 </td>
                 <td>
-                  <select value={banner.status}>
+                  <select value={banner.status}
+                  onChange={(e) =>
+              setNewBanner((prev) => ({
+            ...prev,
+            status: e.target.value as 'active' | 'inactive',
+               }))
+                 }>
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select>

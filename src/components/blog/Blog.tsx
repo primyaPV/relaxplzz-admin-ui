@@ -47,7 +47,7 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
           const updatedBlogs = [...prevBlogs];
           updatedBlogs[existingBlogIndex] = {
             ...newBlog,
-            status: newBlog.status as 'active' | 'inactive' // Ensure correct type
+            status: newBlog.status as 'active' | 'inactive' 
           };
           return updatedBlogs;
         });
@@ -66,7 +66,7 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
           const blogToAdd = { 
             ...newBlog, 
             id: newBlog.id || highestId + 1,
-            status: newBlog.status as 'active' | 'inactive' // Ensure correct type
+            status: newBlog.status as 'active' | 'inactive' 
           };
           
           setBlogs(prevBlogs => [...prevBlogs, blogToAdd]);
@@ -108,7 +108,6 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
   const handleEdit = (blog: BlogPost) => {
     console.log("blog",blog)
     setEditBlog(blog);
-    // setOpenMenuId(null);
     navigate('/createeditblog', { state: blog });
   };
   

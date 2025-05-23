@@ -30,7 +30,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     title: '',
     date: new Date().toISOString().slice(0, 10),
     author: '',
-    status: 'active' as 'active' | 'inactive',
+    status: 'inactive' as 'active' | 'inactive',
     scheduledPublishTime: '',
     fields: [
       { type: 'image' as const, value: '' },
