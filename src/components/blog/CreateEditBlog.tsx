@@ -24,14 +24,21 @@ interface BlogPostFormProps {
   initialData: BlogPost | null;
 }
 
+const getLocalDateTime = () => {
+  const now = new Date();
+  const tzOffset = now.getTimezoneOffset() * 60000; // Offset in milliseconds
+  const localISOTime = new Date(now.getTime() - tzOffset).toISOString().slice(0, 16);
+  return localISOTime;
+};
+
 const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initialData }) => {
   // Default form structure
   const defaultForm = {
     title: '',
     date: new Date().toISOString().slice(0, 10),
     author: '',
-    status: 'inactive' as 'active' | 'inactive',
-    scheduledPublishTime: '',
+    status: 'active' as 'inactive' | 'active',
+    scheduledPublishTime: getLocalDateTime(),
     fields: [
       { type: 'image' as const, value: '' },
       { type: 'content' as const, value: '' },
@@ -42,6 +49,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
   const [resetKey, setResetKey] = useState(Date.now());
   const navigate = useNavigate();
   const location = useLocation();
+  const [isScheduled, setIsScheduled] = useState(false);
 
   // Debugging - log what's coming in
   // useEffect(() => {
@@ -53,23 +61,36 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     setResetKey(Date.now());
   }, [location.state]);
 
+useEffect(() => {
+  if (formData.scheduledPublishTime) {
+    const isFuture = new Date(formData.scheduledPublishTime) > new Date();
+    setIsScheduled(isFuture);
+  }
+}, [formData.scheduledPublishTime]);
+
   useEffect(() => {
-    const blogData = (location.state as BlogPost) || initialData;
-  
-    if (blogData) {
-      const { id, ...rest } = blogData;
-      const fields = Array.isArray(rest.fields) && rest.fields.length > 0
-        ? rest.fields
-        : defaultForm.fields;
-  
-      setFormData({
-        ...defaultForm,  // Ensures all default keys are present
-        ...rest,
-        fields,
-        date: rest.date || new Date().toISOString().slice(0, 10),
-      });
+  const blogData = (location.state as BlogPost) || initialData;
+
+  if (blogData) {
+    const { id, ...rest } = blogData;
+    const fields = Array.isArray(rest.fields) && rest.fields.length > 0
+      ? rest.fields
+      : defaultForm.fields;
+
+    setFormData({
+      ...defaultForm,
+      ...rest,
+      fields,
+      date: rest.date || new Date().toISOString().slice(0, 10),
+    });
+
+    // Pre-check the checkbox if there's a scheduled time
+    if (rest.scheduledPublishTime) {
+      setIsScheduled(true);
     }
-  }, [location.state, initialData]);
+  }
+}, [location.state, initialData]);
+
 
   const handleChange = (field: keyof typeof formData, value: any) => {
     if (field === 'status') {
@@ -115,6 +136,7 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
     scheduledPublishTime: e.target.value,
   }));
 };
+
 
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -338,12 +360,35 @@ const CreateEditBlog: React.FC<BlogPostFormProps> = ({ onClose, onSubmit, initia
 })}
 
 {/* //////////////////////////////////// */}
-<label>Scheduled Publish Time</label>
-        <input
-          type="datetime-local"
-          value={formData.scheduledPublishTime}
-          onChange={handleScheduledPublishChange}
-        />
+ <div className="schedule-checkbox" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px' }}>
+  <input
+    type="checkbox"
+    checked={isScheduled}
+    onChange={(e) => {
+      const checked = e.target.checked;
+      setIsScheduled(checked);
+      setFormData((prev) => ({
+        ...prev,
+        scheduledPublishTime: checked ? getLocalDateTime() : '',
+      }));
+    }}
+  />
+  <label style={{ margin: 0 }}>Schedule Publish Time</label>
+</div>
+
+{isScheduled && (
+  <input
+    type="datetime-local"
+    value={formData.scheduledPublishTime}
+    onChange={(e) =>
+      setFormData((prev) => ({
+        ...prev,
+        scheduledPublishTime: e.target.value,
+      }))
+    }
+  />
+)}
+
         {/* ////////////////////////////////////// */}
 
         <div className="form-actions" >

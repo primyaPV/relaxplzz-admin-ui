@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import '../../css/blog/Blog.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+
 export interface BlogPost {
   id: number;
   title: string;
@@ -185,7 +186,11 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
               <th>Status</th>
               
   <th>
-  {filterType === 'scheduled' ? 'Scheduled Time' : 'Type'}
+  {filterType === 'scheduled'
+    ? 'Scheduled Time'
+    : filterType === 'published'
+    ? 'Published Time'
+    : 'Type'}
 </th>
               <th>Action</th>
             </tr>
@@ -219,13 +224,27 @@ const Blog: React.FC<BlogProps> = ({ blogs, setBlogs, onCreateBlog, setEditBlog 
                   </select>
                 </td>
                 <td>
-  {filterType === 'scheduled'
-    ? new Date(blog.scheduledPublishTime).toLocaleString()
-    : filterType === 'published'
-      ? 'Published'
-      : blog.scheduledPublishTime && new Date(blog.scheduledPublishTime) > new Date()
-        ? 'Scheduled'
-        : 'Published'}
+  {filterType === 'published'
+    ? new Date(blog.scheduledPublishTime || blog.date || new Date().toISOString()).toLocaleString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour12: true
+      })
+    : filterType === 'scheduled'
+    ? new Date(blog.scheduledPublishTime).toLocaleString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour12: true
+      })
+    : blog.scheduledPublishTime && new Date(blog.scheduledPublishTime) > new Date()
+    ? 'Scheduled'
+    : 'Published'}
 </td>
                 <td className="action-cell">
                   <button
