@@ -185,25 +185,30 @@ useEffect(() => {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  
-    const imageFields = formData.fields.filter((f) => f.type === 'image');
-    const allImagesUploaded = imageFields.every((f) => f.value && f.value.trim() !== '');
-  
-    if (imageFields.length > 0 && !allImagesUploaded) {
-      alert('Please upload all required images.');
-      return;
-    }
-  
-    const blogWithTempId = {
-      ...formData,
-      status: formData.status as 'active' | 'inactive',
-      tempId: Date.now(),
-    };
-  
-    onSubmit(blogWithTempId);
-    navigate('/previewblog', { state: blogWithTempId });
+  e.preventDefault();
+
+  const imageFields = formData.fields.filter((f) => f.type === 'image');
+  const allImagesUploaded = imageFields.every((f) => f.value && f.value.trim() !== '');
+
+  if (imageFields.length > 0 && !allImagesUploaded) {
+    alert('Please upload all required images.');
+    return;
+  }
+
+  // If not scheduled, set current system time as scheduledPublishTime
+  const finalScheduledTime = isScheduled ? formData.scheduledPublishTime : getLocalDateTime();
+
+  const blogWithTempId = {
+    ...formData,
+    status: formData.status as 'active' | 'inactive',
+    scheduledPublishTime: finalScheduledTime,
+    tempId: Date.now(),
   };
+
+  onSubmit(blogWithTempId);
+  navigate('/previewblog', { state: blogWithTempId });
+};
+
 
   const handleReset = () => {
     setFormData(defaultForm);
