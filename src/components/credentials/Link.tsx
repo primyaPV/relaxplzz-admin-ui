@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import logo1 from '../../logo.svg';
 import logo2 from '../../assets/site-logo-white-2.webp';
 import '../../css/gallery/Link.css';
@@ -11,15 +11,29 @@ interface LinkItem {
 
 const Link: React.FC = () => {
   const [links, setLinks] = useState<LinkItem[]>([
-    { id: 1, url: 'https://www.google.com',logo:logo1},
-    { id: 2, url: 'https://www.youtube.com',logo:logo2},
+    { id: 1, url: 'https://www.google.com', logo: logo1 },
+    { id: 2, url: 'https://www.youtube.com', logo: logo2 },
   ]);
 
+  const [editLinkId, setEditLinkId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newLink, setNewLink] = useState<{ url: string; logo: string | ArrayBuffer | null }>({
     url: '',
     logo: null,
   });
+
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const actionMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (actionMenuRef.current && !actionMenuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleCreateLink = () => {
     setIsModalOpen(true);
@@ -42,15 +56,41 @@ const Link: React.FC = () => {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newLinkWithId: LinkItem = { ...newLink, id: links.length + 1 } as LinkItem;
+  e.preventDefault();
+
+  if (editLinkId !== null) {
+    setLinks((prev) =>
+      prev.map(link =>
+        link.id === editLinkId ? { ...link, ...newLink } : link
+      )
+    );
+  } else {
+    const newLinkWithId: LinkItem = {
+      ...newLink,
+      id: links.length > 0 ? Math.max(...links.map(l => l.id)) + 1 : 1,
+    };
     setLinks((prev) => [...prev, newLinkWithId]);
-    setNewLink({ url: '', logo: null });
-    setIsModalOpen(false);
-  };
+  }
+  setNewLink({ url: '', logo: null });
+  setEditLinkId(null);
+  setIsModalOpen(false);
+};
+
 
   const handleRestore = () => {
     setNewLink({ url: '', logo: null });
+  };
+
+  const handleEdit = (link: LinkItem) => {
+  setNewLink({ url: link.url, logo: link.logo || null });
+  setEditLinkId(link.id); // 🔥 Track the link being edited
+  setIsModalOpen(true);
+  setOpenMenuId(null);
+};
+
+  const handleDelete = (id: number) => {
+    setLinks((prev) => prev.filter(link => link.id !== id));
+    setOpenMenuId(null);
   };
 
   return (
@@ -92,13 +132,19 @@ const Link: React.FC = () => {
                     />
                   )}
                 </td>
-                <td>
-                  <button className="edit-button">
-                    <i className="fas fa-edit"></i>
+                <td className="action-cell">
+                  <button
+                    className="menu-button"
+                    onClick={() => setOpenMenuId(openMenuId === link.id ? null : link.id)}
+                  >
+                    ⋮
                   </button>
-                  <button className="delete-button">
-                    <i className="fas fa-trash-alt"></i>
-                  </button>
+                  {openMenuId === link.id && (
+                    <div className="action-menu" ref={actionMenuRef}>
+                      <button onClick={() => handleEdit(link)}>Edit</button>
+                      <button onClick={() => handleDelete(link.id)}>Delete</button>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}
@@ -126,12 +172,7 @@ const Link: React.FC = () => {
               </div>
               <div className="form-group">
                 <label htmlFor="logo">Upload Logo</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload}
-                  required
-                />
+                <input type="file" accept="image/*" onChange={handleLogoUpload} />
                 {newLink.logo && (
                   <div className="preview-logo">
                     <img
@@ -146,9 +187,7 @@ const Link: React.FC = () => {
               </div>
               <div className="form-actions">
                 <button type="submit">Add Link</button>
-                <button type="button" onClick={handleRestore}>
-                  Restore
-                </button>
+                <button type="button" onClick={handleRestore}>Restore</button>
               </div>
             </form>
           </div>

@@ -12,6 +12,8 @@ interface ImageVideo1 {
 }
 
 const ImageVideo: React.FC = () => {
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+
   const [mediaList, setMediaList] = useState<ImageVideo1[]>([
     { id: 1, media: image1, title: 'Banner 1', type: 'image', status: 'active' },
     { id: 2, media: video1, title: 'Banner 2', type: 'video', status: 'inactive' },
@@ -23,7 +25,9 @@ const ImageVideo: React.FC = () => {
     media: null as string | File | null, 
     type: 'image' as 'image' | 'video' | 'URL',
   });
-
+const toggleMenu = (id: number) => {
+  setOpenMenuId(openMenuId === id ? null : id);
+};
   const handleCreateMedia = () => {
     setIsModalOpen(true);
   };
@@ -51,6 +55,26 @@ const ImageVideo: React.FC = () => {
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMedia((prev) => ({ ...prev, title: e.target.value }));
   };
+  const handleEdit = (id: number) => {
+  const mediaToEdit = mediaList.find(m => m.id === id);
+  if (mediaToEdit) {
+    setNewMedia({
+      title: mediaToEdit.title,
+      media: mediaToEdit.media,
+      type: mediaToEdit.type,
+    });
+    setIsModalOpen(true);
+    setOpenMenuId(null);
+  }
+};
+
+const handleDelete = (id: number) => {
+  if (window.confirm('Are you sure you want to delete this media item?')) {
+    setMediaList(prev => prev.filter(m => m.id !== id));
+  }
+  setOpenMenuId(null);
+};
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,13 +147,27 @@ const ImageVideo: React.FC = () => {
                   </select>
                 </td>
                 <td>
-                  <button className="edit-button">
-                    <i className="fas fa-edit"></i>
-                  </button>
-                  <button className="delete-button">
-                    <i className="fas fa-trash-alt"></i>
-                  </button>
-                </td>
+  <div style={{ position: 'relative', display: 'inline-block' }}>
+    <button
+      className="actions-menu-button"
+      onClick={() => toggleMenu(item.id)}
+      aria-label="Actions menu"
+    >
+      ⋮
+    </button>
+    {openMenuId === item.id && (
+      <div className="actions-dropdown">
+        <button onClick={() => handleEdit(item.id)} className="dropdown-item">
+          Edit
+        </button>
+        <button onClick={() => handleDelete(item.id)} className="dropdown-item delete">
+          Delete
+        </button>
+      </div>
+    )}
+  </div>
+</td>
+
               </tr>
             ))}
           </tbody>

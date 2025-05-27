@@ -236,3 +236,42 @@
     color: blue;
     text-decoration: underline;
 }
+
+.midban-actions-menu-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.midban-actions-dropdown {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    z-index: 100;
+    min-width: 100px;
+}
+
+.midban-actions-dropdown .dropdown-item {
+    display: block;
+    padding: 8px 12px;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.midban-actions-dropdown .dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+.midban-actions-dropdown .dropdown-item.delete {
+    color: red;
+}

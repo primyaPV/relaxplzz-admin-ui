@@ -12,6 +12,7 @@ const EnquiryList: React.FC = () => {
 const [showDropdown, setShowDropdown] = useState(false);
 const [startDate, setStartDate] = useState('');
 const [endDate, setEndDate] = useState('');
+const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
 const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -19,10 +20,19 @@ const searchFields = ['All Fields', 'Name', 'Email', 'Phone', 'Subject', 'Date']
 
 useEffect(() => {
   const handleClickOutside = (event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    const target = event.target as HTMLElement;
+
+    // Close search dropdown
+    if (dropdownRef.current && !dropdownRef.current.contains(target)) {
       setShowDropdown(false);
     }
+
+    // Close action menu
+    if (!target.closest('.action-menu-wrapper')) {
+      setOpenMenuId(null);
+    }
   };
+
   document.addEventListener('mousedown', handleClickOutside);
   return () => {
     document.removeEventListener('mousedown', handleClickOutside);
@@ -85,6 +95,10 @@ useEffect(() => {
     }
   };
 
+  const toggleMenu = (id: number) => {
+  setOpenMenuId((prev) => (prev === id ? null : id));
+};
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const currentDate = formData.date || new Date().toISOString().split('T')[0];
@@ -131,10 +145,6 @@ useEffect(() => {
     return generalMatch && headerMatch;
   });
   
-  
-  
-  
-
   return (
     <div className="enquiry-list-page">
       <header className="enquiry-list-header">
@@ -243,13 +253,18 @@ useEffect(() => {
               <td>{enquiry.message}</td>
               <td>{enquiry.date}</td>
               <td>
-                <button className="edit-button" onClick={() => handleEdit(enquiry.id)}>
-                  <i className="fas fa-edit"></i>
-                </button>
-                <button className="delete-button" onClick={() => handleDeleteClick(enquiry.id)}>
-                  <i className="fas fa-trash-alt"></i>
-                </button>
-              </td>
+  <div className="action-menu-wrapper">
+    <button className="action-menu-button" onClick={() => toggleMenu(enquiry.id)}>
+      ⋮
+    </button>
+    {openMenuId === enquiry.id && (
+      <div className="action-dropdown">
+        <button onClick={() => handleEdit(enquiry.id)}>Edit</button>
+        <button className="delete" onClick={() => handleDeleteClick(enquiry.id)}>Delete</button>
+      </div>
+    )}
+  </div>
+</td>
             </>
           )}
         </tr>

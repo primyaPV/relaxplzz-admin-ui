@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import '../../css/Address.css';
 
 interface AddressType {
@@ -34,6 +34,8 @@ const Address: React.FC = () => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
   const [editAddressId, setEditAddressId] = useState<number | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const actionMenuRef = useRef<HTMLDivElement | null>(null);
 
   const [newAddress, setNewAddress] = useState<Omit<AddressType, 'id'>>({
     street: '',
@@ -43,11 +45,21 @@ const Address: React.FC = () => {
     phoneNumbers: [''],
   });
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (actionMenuRef.current && !actionMenuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleCreateAddress = () => {
     setEditAddressId(null); 
     setNewAddress({ street: '', city: '', state: '', zip: '', phoneNumbers: [''] });
     setIsModalOpen(true);
-  }
+  };
 
   const handleEdit = (address: AddressType) => {
     setEditAddressId(address.id);
@@ -59,6 +71,7 @@ const Address: React.FC = () => {
       phoneNumbers: [...address.phoneNumbers],
     });
     setIsModalOpen(true);
+    setOpenMenuId(null);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, index?: number) => {
@@ -105,6 +118,7 @@ const Address: React.FC = () => {
   const confirmDelete = (id: number) => {
     setDeleteTargetId(id);
     setDeleteConfirmOpen(true);
+    setOpenMenuId(null);
   };
 
   const handleDelete = () => {
@@ -143,13 +157,19 @@ const Address: React.FC = () => {
                 <td>{address.state}</td>
                 <td>{address.zip}</td>
                 <td>{address.phoneNumbers.join(', ')}</td>
-                <td>
-                  <button className="edit-button" onClick={() => handleEdit(address)}>
-                    <i className="fas fa-edit"></i>
+                <td className="action-cell">
+                  <button
+                    className="menu-button"
+                    onClick={() => setOpenMenuId(openMenuId === address.id ? null : address.id)}
+                  >
+                    ⋮
                   </button>
-                  <button className="delete-button" onClick={() => confirmDelete(address.id)}>
-                    <i className="fas fa-trash-alt"></i>
-                  </button>
+                  {openMenuId === address.id && (
+                    <div className="action-menu" ref={actionMenuRef}>
+                      <button onClick={() => handleEdit(address)}>Edit</button>
+                      <button onClick={() => confirmDelete(address.id)}>Delete</button>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}
@@ -157,6 +177,7 @@ const Address: React.FC = () => {
         </table>
       </div>
 
+      {/* Address Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -207,7 +228,8 @@ const Address: React.FC = () => {
         </div>
       )}
 
-{deleteConfirmOpen && (
+      {/* Confirm Delete Modal */}
+      {deleteConfirmOpen && (
         <div className="modal-overlay">
           <div className="modal-content1 confirm-modal">
             <h3>Do you want to delete this address?</h3>

@@ -196,3 +196,39 @@
     text-align: center;
     margin-left: 20px;
 }
+
+.actions-menu-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.actions-dropdown {
+    top: -54px;
+    right: -109px;
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    padding: 5px 0;
+    z-index: 100;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 8px 15px;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #eee;
+}
+
+.dropdown-item.delete {
+    color: red;
+}
